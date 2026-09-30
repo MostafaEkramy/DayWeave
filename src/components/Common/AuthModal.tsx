@@ -161,16 +161,6 @@ export const AuthModal: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (!isFirebaseAvailable) {
-      setError(
-        isAr
-          ? 'المزامنة السحابية تتطلب إعداد مفاتيح Firebase في ملف .env (راجع .env.example). يمكنك استخدام التطبيق وتعديل ملفك الشخصي محلياً الآن.'
-          : 'Cloud authentication requires Firebase keys configured in .env (see .env.example). DayWeave works 100% locally right now.'
-      );
-      return;
-    }
-
     setLoading(true);
 
     try {
@@ -193,9 +183,13 @@ export const AuthModal: React.FC = () => {
       if (err?.code === 'auth/invalid-credential' || err?.code === 'auth/wrong-password') {
         msg = isAr ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة.' : 'Invalid email or password.';
       } else if (err?.code === 'auth/email-already-in-use') {
-        msg = isAr ? 'هذا البريد الإلكتروني مسجل بالفعل.' : 'This email is already in use.';
+        msg = isAr ? 'هذا البريد الإلكتروني مسجل بالفعل. يمكنك تسجيل الدخول.' : 'This email is already in use. Please sign in.';
       } else if (err?.code === 'auth/weak-password') {
         msg = isAr ? 'كلمة المرور يجب أن تتكون من 6 أحرف على الأقل.' : 'Password should be at least 6 characters.';
+      } else if (err?.code === 'auth/invalid-email') {
+        msg = isAr ? 'يرجى إدخال بريد إلكتروني صالح.' : 'Please enter a valid email address.';
+      } else if (err?.code === 'auth/user-not-found') {
+        msg = isAr ? 'لم يتم العثور على حساب بهذا البريد الإلكتروني.' : 'No account found with this email.';
       }
       setError(msg);
     } finally {
@@ -319,12 +313,12 @@ export const AuthModal: React.FC = () => {
               <h3 style={{ fontSize: 16, fontWeight: 700 }}>
                 {activeTab === 'profile' 
                   ? (isAr ? 'الملف الشخصي' : 'User Profile') 
-                  : (isAr ? 'المزامنة السحابية والحساب' : 'Cloud Sync & Account')}
+                  : (isAr ? 'تسجيل الدخول والحساب' : 'Account & Sign In')}
               </h3>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
                 {activeTab === 'profile' 
                   ? (isAr ? 'تخصيص معلوماتك وصورتك الشخصية' : 'Personalize your profile and daily goals') 
-                  : (isAr ? 'ربط الحساب والمزامنة عبر الأجهزة' : 'Multi-device cloud synchronization')}
+                  : (isAr ? 'تسجيل الدخول أو إنشاء حساب جديد بالبريد الإلكتروني' : 'Sign in or create a new account with email')}
               </p>
             </div>
           </div>
@@ -375,7 +369,7 @@ export const AuthModal: React.FC = () => {
             }}
           >
             <RefreshCw size={14} />
-            <span>{isAr ? 'المزامنة السحابية' : 'Cloud Sync'}</span>
+            <span>{isAr ? 'الحساب والتسجيل' : 'Account & Login'}</span>
           </button>
         </div>
 
@@ -844,7 +838,7 @@ export const AuthModal: React.FC = () => {
                 gap: 12
               }}>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                  {isAr ? 'ملفك الشخصي يعمل في الوضع المحلي (محفوظ على جهازك).' : 'Profile operating in Local Mode (saved on this device).'}
+                  {isAr ? 'أنت تستخدم التطبيق كزائر. سجّل دخولك لحفظ بياناتك باسمك.' : 'Using DayWeave as Guest. Sign in to save your personal profile.'}
                 </div>
                 <button
                   type="button"
@@ -852,7 +846,7 @@ export const AuthModal: React.FC = () => {
                   className="btn-ghost"
                   style={{ fontSize: 12, color: 'var(--accent-primary)', flexShrink: 0, padding: '4px 8px', fontWeight: 600 }}
                 >
-                  {isAr ? 'المزامنة السحابية' : 'Cloud Sync'}
+                  {isAr ? 'تسجيل الدخول' : 'Sign In'}
                 </button>
               </div>
             )}
@@ -869,12 +863,29 @@ export const AuthModal: React.FC = () => {
                 flexDirection: 'column',
                 gap: 12,
               }}>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  {isAr ? 'مسجل الدخول كـ:' : 'Signed in as:'}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                    {isAr ? 'مسجل الدخول كـ:' : 'Signed in as:'}
+                  </div>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: 'var(--status-success)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    padding: '2px 8px',
+                    borderRadius: 'var(--radius-xs)',
+                  }}>
+                    {isAr ? 'حساب نشط' : 'Active Account'}
+                  </span>
                 </div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
                   {currentUser.email}
                 </div>
+                {currentUser.displayName && (
+                  <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                    {currentUser.displayName}
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={handleLogout}
