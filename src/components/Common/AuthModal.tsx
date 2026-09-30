@@ -886,50 +886,6 @@ export const AuthModal: React.FC = () => {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {!isFirebaseAvailable && (
-              <div style={{
-                padding: '14px 16px',
-                backgroundColor: 'var(--bg-subtle)',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-medium)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    backgroundColor: 'var(--status-success)',
-                    display: 'inline-block',
-                  }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
-                    {isAr ? 'الوضع المحلي بدون إنترنت نشط' : 'Local Offline Mode Active'}
-                  </span>
-                </div>
-                <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>
-                  {isAr 
-                    ? 'DayWeave يعمل بكامل وظائفه محلياً بدون إنترنت، وجميع بياناتك تُحفظ على جهازك بأمان تام.'
-                    : 'DayWeave is fully functional in offline mode with all data saved directly on your device.'}
-                </p>
-                <div style={{
-                  padding: '10px 12px',
-                  backgroundColor: 'var(--bg-surface)',
-                  borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--border-subtle)',
-                  fontSize: 11,
-                  color: 'var(--text-muted)',
-                  lineHeight: 1.5,
-                }}>
-                  <strong>{isAr ? 'المزامنة السحابية (اختيارية):' : 'Cloud Sync (Optional):'}</strong>{' '}
-                  {isAr 
-                    ? 'لربط المزامنة السحابية بحساب Google أو البريد، قم بإضافة مفاتيح Firebase في ملف .env (راجع .env.example).'
-                    : 'To enable multi-device sync with Google or email, configure Firebase keys in .env (see .env.example).'}
-                </div>
-              </div>
-            )}
-
             {currentUser && !isGuest ? (
               <div style={{
                 padding: '16px',
