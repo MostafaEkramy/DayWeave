@@ -387,9 +387,9 @@ export const TemplatesView: React.FC = () => {
             className="animate-fade-in"
             onClick={e => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-              <Calendar size={20} style={{ color: 'var(--accent-primary)' }} />
-              <h4 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16 }}>
+              <Calendar size={20} style={{ color: 'var(--accent-primary)', flexShrink: 0, marginTop: 2 }} />
+              <h4 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0, lineHeight: 1.35 }}>
                 {t('templates.applyConfirmTitle').replace('{title}', applyingTmpl.title).replace('{date}', formatDateTitle(selectedDate, language))}
               </h4>
             </div>
@@ -412,27 +412,36 @@ export const TemplatesView: React.FC = () => {
               </div>
             )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
               <label style={{
                 display: 'flex',
                 alignItems: 'flex-start',
-                gap: 10,
-                padding: '10px 12px',
-                borderRadius: 'var(--radius-sm)',
-                border: `1px solid ${applyMode === 'replace' ? 'var(--accent-primary)' : 'var(--border-subtle)'}`,
-                backgroundColor: applyMode === 'replace' ? 'var(--bg-subtle)' : 'transparent',
+                gap: 12,
+                padding: '12px 14px',
+                borderRadius: 'var(--radius-md)',
+                border: `1.5px solid ${applyMode === 'replace' ? 'var(--accent-primary)' : 'var(--border-subtle)'}`,
+                backgroundColor: applyMode === 'replace' ? 'var(--accent-primary-subtle)' : 'var(--bg-subtle)',
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}>
                 <input
                   type="radio"
                   name="applyMode"
                   checked={applyMode === 'replace'}
                   onChange={() => setApplyMode('replace')}
-                  style={{ marginTop: 2 }}
+                  style={{
+                    width: 16,
+                    height: 16,
+                    minWidth: 16,
+                    marginTop: 2,
+                    accentColor: 'var(--accent-primary)',
+                    flexShrink: 0,
+                    cursor: 'pointer',
+                  }}
                 />
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{t('templates.replaceEntireDay')}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{t('templates.replaceEntireDay')}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                     {t('templates.replaceDesc').replace('{date}', formatDateTitle(selectedDate, language))}
                   </div>
                 </div>
@@ -441,23 +450,32 @@ export const TemplatesView: React.FC = () => {
               <label style={{
                 display: 'flex',
                 alignItems: 'flex-start',
-                gap: 10,
-                padding: '10px 12px',
-                borderRadius: 'var(--radius-sm)',
-                border: `1px solid ${applyMode === 'merge' ? 'var(--accent-primary)' : 'var(--border-subtle)'}`,
-                backgroundColor: applyMode === 'merge' ? 'var(--bg-subtle)' : 'transparent',
+                gap: 12,
+                padding: '12px 14px',
+                borderRadius: 'var(--radius-md)',
+                border: `1.5px solid ${applyMode === 'merge' ? 'var(--accent-primary)' : 'var(--border-subtle)'}`,
+                backgroundColor: applyMode === 'merge' ? 'var(--accent-primary-subtle)' : 'var(--bg-subtle)',
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}>
                 <input
                   type="radio"
                   name="applyMode"
                   checked={applyMode === 'merge'}
                   onChange={() => setApplyMode('merge')}
-                  style={{ marginTop: 2 }}
+                  style={{
+                    width: 16,
+                    height: 16,
+                    minWidth: 16,
+                    marginTop: 2,
+                    accentColor: 'var(--accent-primary)',
+                    flexShrink: 0,
+                    cursor: 'pointer',
+                  }}
                 />
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{t('templates.mergeWithExisting')}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{t('templates.mergeWithExisting')}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                     {t('templates.mergeDesc')}
                   </div>
                 </div>
