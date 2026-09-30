@@ -238,6 +238,46 @@ export const Timeline: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <ConflictBanner />
 
+      {/* Empty Day Welcoming Indicator */}
+      {todayActivities.length === 0 && (
+        <div 
+          style={{
+            padding: '14px 18px',
+            backgroundColor: 'var(--bg-surface)',
+            borderRadius: 'var(--radius-md)',
+            border: '1px dashed var(--border-medium)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 16,
+            flexWrap: 'wrap'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Calendar size={18} style={{ color: 'var(--accent-primary)', flexShrink: 0 }} />
+            <div>
+              <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
+                {isRTL ? 'الجدول اليومي فارغ' : 'Your day is open'}
+              </p>
+              <p style={{ margin: '2px 0 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>
+                {isRTL ? 'انقر مرتين على أي ساعة بالأسفل، أو اضغط زر "+ إضافة نشاط" للبدء.' : 'Double-click any time slot below or click "+ Add Activity" to start.'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              setEditingActivity(null);
+              setIsActivityModalOpen(true);
+            }}
+            className="btn-primary"
+            style={{ fontSize: 12, padding: '6px 14px' }}
+          >
+            <Plus size={14} />
+            <span>{isRTL ? 'إضافة نشاط' : 'Add Activity'}</span>
+          </button>
+        </div>
+      )}
+
       {/* Main Timeline Card Container */}
       <div
         style={{

@@ -9,6 +9,7 @@ export const AuthModal: React.FC = () => {
   const { 
     currentUser, 
     isGuest, 
+    isFirebaseAvailable,
     loginWithEmail, 
     signupWithEmail, 
     loginWithGoogle,
@@ -22,6 +23,7 @@ export const AuthModal: React.FC = () => {
   const { language } = useLanguage();
   const isAr = language === 'ar';
 
+  const [activeTab, setActiveTab] = useState<'profile' | 'cloud'>('profile');
   const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,11 +50,12 @@ export const AuthModal: React.FC = () => {
 
   // Sync profile state when modal opens or profile changes
   useEffect(() => {
-    if (currentUser && !isGuest && isAuthModalOpen) {
-      setEditName(userProfile?.displayName || currentUser.displayName || '');
+    if (isAuthModalOpen) {
+      setEditName(userProfile?.displayName || currentUser?.displayName || '');
       setEditBio(userProfile?.bio || '');
       setEditGoal(userProfile?.goal || '');
-      setEditPhotoURL(userProfile?.photoURL || currentUser.photoURL || '');
+      setEditPhotoURL(userProfile?.photoURL || currentUser?.photoURL || '');
+      setError(null);
     }
   }, [currentUser, isGuest, isAuthModalOpen, userProfile]);
 
@@ -159,6 +162,16 @@ export const AuthModal: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!isFirebaseAvailable) {
+      setError(
+        isAr
+          ? 'المزامنة السحابية تتطلب إعداد مفاتيح Firebase في ملف .env (راجع .env.example). يمكنك استخدام التطبيق وتعديل ملفك الشخصي محلياً الآن.'
+          : 'Cloud authentication requires Firebase keys configured in .env (see .env.example). DayWeave works 100% locally right now.'
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -193,13 +206,22 @@ export const AuthModal: React.FC = () => {
 
   const handleGoogleSignIn = async () => {
     setError(null);
+
+    if (!isFirebaseAvailable) {
+      setError(
+        isAr
+          ? 'المزامنة السحابية عبر Google تتطلب إعداد مفاتيح Firebase في ملف .env (راجع .env.example). يمكنك استخدام التطبيق بكامل مزاياه محلياً الآن.'
+          : 'Google Sign-in requires Firebase credentials in .env (see .env.example). DayWeave works 100% locally right now.'
+      );
+      return;
+    }
+
     setLoading(true);
     try {
       await loginWithGoogle();
       showToast(isAr ? 'تم تسجيل الدخول عبر Google بنجاح!' : 'Signed in with Google!');
       setIsAuthModalOpen(false);
     } catch (err: any) {
-      console.error(err);
       if (err?.code !== 'auth/popup-closed-by-user') {
         setError(err?.message || (isAr ? 'فشل تسجيل الدخول عبر Google' : 'Google sign-in failed'));
       }
@@ -304,7 +326,7 @@ export const AuthModal: React.FC = () => {
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div 
               style={{ 
@@ -318,23 +340,69 @@ export const AuthModal: React.FC = () => {
                 justifyContent: 'center'
               }}
             >
-              <User size={16} />
+              {activeTab === 'profile' ? <User size={16} /> : <RefreshCw size={16} />}
             </div>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 700 }}>
-                {currentUser && !isGuest 
-                  ? (isAr ? 'الملف الشخصي' : 'Your Profile') 
-                  : (isAr ? 'تسجيل الدخول إلى DayWeave' : 'Sign in to DayWeave')}
+                {activeTab === 'profile' 
+                  ? (isAr ? 'الملف الشخصي' : 'User Profile') 
+                  : (isAr ? 'المزامنة السحابية والحساب' : 'Cloud Sync & Account')}
               </h3>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                {currentUser && !isGuest 
-                  ? (isAr ? 'إدارة حسابك ومعلوماتك الشخصية' : 'Manage your account & personal info') 
-                  : (isAr ? 'المزامنة السحابية والحفظ عبر Firebase Firestore' : 'Cloud sync & multi-device backup via Firebase')}
+                {activeTab === 'profile' 
+                  ? (isAr ? 'تخصيص معلوماتك وصورتك الشخصية' : 'Personalize your profile and daily goals') 
+                  : (isAr ? 'ربط الحساب والمزامنة عبر الأجهزة' : 'Multi-device cloud synchronization')}
               </p>
             </div>
           </div>
           <button className="btn-icon-subtle" onClick={() => setIsAuthModalOpen(false)}>
             <X size={16} />
+          </button>
+        </div>
+
+        {/* Tab Selector */}
+        <div style={{ display: 'flex', gap: 6, marginBottom: 18, borderBottom: '1px solid var(--border-subtle)', paddingBottom: 10 }}>
+          <button
+            type="button"
+            onClick={() => { setActiveTab('profile'); setError(null); }}
+            style={{
+              padding: '6px 14px',
+              borderRadius: 'var(--radius-xs)',
+              fontSize: 12,
+              fontWeight: 600,
+              backgroundColor: activeTab === 'profile' ? 'var(--accent-primary-subtle)' : 'transparent',
+              color: activeTab === 'profile' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <User size={14} />
+            <span>{isAr ? 'الملف الشخصي' : 'Profile'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => { setActiveTab('cloud'); setError(null); }}
+            style={{
+              padding: '6px 14px',
+              borderRadius: 'var(--radius-xs)',
+              fontSize: 12,
+              fontWeight: 600,
+              backgroundColor: activeTab === 'cloud' ? 'var(--accent-primary-subtle)' : 'transparent',
+              color: activeTab === 'cloud' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <RefreshCw size={14} />
+            <span>{isAr ? 'المزامنة السحابية' : 'Cloud Sync'}</span>
           </button>
         </div>
 
@@ -357,7 +425,7 @@ export const AuthModal: React.FC = () => {
           </div>
         )}
 
-        {currentUser && !isGuest ? (
+        {activeTab === 'profile' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {/* ===== PROFILE PHOTO ===== */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, paddingBottom: 8 }}>
@@ -392,7 +460,7 @@ export const AuthModal: React.FC = () => {
                       boxShadow: '0 4px 12px rgba(37,99,235,0.25)',
                     }}
                   >
-                    {getInitials(editName || currentUser.displayName || '')}
+                    {getInitials(editName || currentUser?.displayName || (isAr ? 'مستخدم' : 'User'))}
                   </div>
                 )}
                 <button
@@ -516,7 +584,7 @@ export const AuthModal: React.FC = () => {
               </div>
               <div style={{ ...fieldRowStyle, cursor: 'default', opacity: 0.8 }}>
                 <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>
-                  {currentUser.email || (isAr ? 'غير متاح' : 'N/A')}
+                  {currentUser?.email || (isAr ? 'حساب محلي (تخزين في المتصفح)' : 'Local Profile (Stored in browser)')}
                 </span>
               </div>
             </div>
@@ -706,90 +774,190 @@ export const AuthModal: React.FC = () => {
               {syncStatus === 'syncing' && <RefreshCw size={13} className="animate-spin" style={{ color: 'var(--accent-primary)' }} />}
             </div>
 
-            {/* Sign Out */}
-            <button 
-              onClick={handleLogout}
-              className="btn-secondary"
-              style={{ width: '100%', justifyContent: 'center', marginTop: 4 }}
-            >
-              <LogOut size={16} />
-              <span>{isAr ? 'تسجيل الخروج' : 'Sign Out'}</span>
-            </button>
-
-            {/* Account Deletion Danger Zone */}
-            <div style={{
-              marginTop: 12,
-              paddingTop: 12,
-              borderTop: '1px solid var(--border-subtle)',
-            }}>
-              {!isConfirmingDelete ? (
-                <button
-                  onClick={() => setIsConfirmingDelete(true)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--status-danger)',
-                    fontSize: 12,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '4px 0',
-                    opacity: 0.8,
-                  }}
+            {/* Actions: Sign out / Local mode status */}
+            {currentUser && !isGuest ? (
+              <>
+                <button 
+                  onClick={handleLogout}
+                  className="btn-secondary"
+                  style={{ width: '100%', justifyContent: 'center', marginTop: 4 }}
                 >
-                  <Trash2 size={13} />
-                  <span>{isAr ? 'حذف الحساب والبيانات نهائياً' : 'Delete Account and Data Permanently'}</span>
+                  <LogOut size={16} />
+                  <span>{isAr ? 'تسجيل الخروج' : 'Sign Out'}</span>
                 </button>
-              ) : (
+
+                {/* Account Deletion Danger Zone */}
                 <div style={{
-                  padding: 12,
-                  borderRadius: 'var(--radius-sm)',
-                  backgroundColor: 'var(--status-danger-bg)',
-                  border: '1px solid var(--status-danger-border)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 8,
+                  marginTop: 12,
+                  paddingTop: 12,
+                  borderTop: '1px solid var(--border-subtle)',
                 }}>
-                  <p style={{ fontSize: 12, color: 'var(--status-danger)', fontWeight: 600, margin: 0 }}>
-                    {isAr ? 'هل أنت متأكد؟ سيتم مسح جميع الأنشطة والبيانات نهائياً!' : 'Are you sure? All activities, streak and cloud data will be permanently deleted.'}
-                  </p>
-                  <div style={{ display: 'flex', gap: 8 }}>
+                  {!isConfirmingDelete ? (
                     <button
-                      onClick={handleDeleteAccount}
-                      disabled={deleteLoading}
+                      onClick={() => setIsConfirmingDelete(true)}
                       style={{
-                        padding: '6px 12px',
-                        borderRadius: 'var(--radius-xs)',
-                        backgroundColor: 'var(--status-danger)',
-                        color: '#FFF',
+                        background: 'none',
                         border: 'none',
+                        color: 'var(--status-danger)',
                         fontSize: 12,
-                        fontWeight: 600,
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         gap: 6,
+                        padding: '4px 0',
+                        opacity: 0.8,
                       }}
                     >
-                      {deleteLoading ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
-                      <span>{isAr ? 'تأكيد الحذف النهائي' : 'Confirm Permanent Delete'}</span>
+                      <Trash2 size={13} />
+                      <span>{isAr ? 'حذف الحساب والبيانات نهائياً' : 'Delete Account and Data Permanently'}</span>
                     </button>
-                    <button
-                      onClick={() => setIsConfirmingDelete(false)}
-                      disabled={deleteLoading}
-                      className="btn-ghost"
-                      style={{ fontSize: 12, padding: '6px 12px' }}
-                    >
-                      {isAr ? 'إلغاء' : 'Cancel'}
-                    </button>
-                  </div>
+                  ) : (
+                    <div style={{
+                      padding: 12,
+                      borderRadius: 'var(--radius-sm)',
+                      backgroundColor: 'var(--status-danger-bg)',
+                      border: '1px solid var(--status-danger-border)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                    }}>
+                      <p style={{ fontSize: 12, color: 'var(--status-danger)', fontWeight: 600, margin: 0 }}>
+                        {isAr ? 'هل أنت متأكد؟ سيتم مسح جميع الأنشطة والبيانات نهائياً!' : 'Are you sure? All activities, streak and cloud data will be permanently deleted.'}
+                      </p>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={handleDeleteAccount}
+                          disabled={deleteLoading}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: 'var(--radius-xs)',
+                            backgroundColor: 'var(--status-danger)',
+                            color: '#FFF',
+                            border: 'none',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                          }}
+                        >
+                          {deleteLoading ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                          <span>{isAr ? 'تأكيد الحذف النهائي' : 'Confirm Permanent Delete'}</span>
+                        </button>
+                        <button
+                          onClick={() => setIsConfirmingDelete(false)}
+                          disabled={deleteLoading}
+                          className="btn-ghost"
+                          style={{ fontSize: 12, padding: '6px 12px' }}
+                        >
+                          {isAr ? 'إلغاء' : 'Cancel'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <div style={{
+                marginTop: 4,
+                padding: '12px 14px',
+                backgroundColor: 'var(--bg-subtle)',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-subtle)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12
+              }}>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                  {isAr ? 'ملفك الشخصي يعمل في الوضع المحلي (محفوظ على جهازك).' : 'Profile operating in Local Mode (saved on this device).'}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setActiveTab('cloud'); setError(null); }}
+                  className="btn-ghost"
+                  style={{ fontSize: 12, color: 'var(--accent-primary)', flexShrink: 0, padding: '4px 8px', fontWeight: 600 }}
+                >
+                  {isAr ? 'المزامنة السحابية' : 'Cloud Sync'}
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {!isFirebaseAvailable && (
+              <div style={{
+                padding: '14px 16px',
+                backgroundColor: 'var(--bg-subtle)',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border-medium)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--status-success)',
+                    display: 'inline-block',
+                  }} />
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {isAr ? 'الوضع المحلي بدون إنترنت نشط' : 'Local Offline Mode Active'}
+                  </span>
+                </div>
+                <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>
+                  {isAr 
+                    ? 'DayWeave يعمل بكامل وظائفه محلياً بدون إنترنت، وجميع بياناتك تُحفظ على جهازك بأمان تام.'
+                    : 'DayWeave is fully functional in offline mode with all data saved directly on your device.'}
+                </p>
+                <div style={{
+                  padding: '10px 12px',
+                  backgroundColor: 'var(--bg-surface)',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border-subtle)',
+                  fontSize: 11,
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.5,
+                }}>
+                  <strong>{isAr ? 'المزامنة السحابية (اختيارية):' : 'Cloud Sync (Optional):'}</strong>{' '}
+                  {isAr 
+                    ? 'لربط المزامنة السحابية بحساب Google أو البريد، قم بإضافة مفاتيح Firebase في ملف .env (راجع .env.example).'
+                    : 'To enable multi-device sync with Google or email, configure Firebase keys in .env (see .env.example).'}
+                </div>
+              </div>
+            )}
+
+            {currentUser && !isGuest ? (
+              <div style={{
+                padding: '16px',
+                backgroundColor: 'var(--bg-subtle)',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border-subtle)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+              }}>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                  {isAr ? 'مسجل الدخول كـ:' : 'Signed in as:'}
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+                  {currentUser.email}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="btn-secondary"
+                  style={{ width: '100%', justifyContent: 'center', marginTop: 4 }}
+                >
+                  <LogOut size={16} />
+                  <span>{isAr ? 'تسجيل الخروج' : 'Sign Out'}</span>
+                </button>
+              </div>
+            ) : (
+              <>
             {/* Google Sign-In Quick Action */}
             <button
               type="button"
@@ -933,9 +1101,11 @@ export const AuthModal: React.FC = () => {
                 </button>
               </div>
             </form>
-          </div>
+          </>
         )}
       </div>
-    </div>
+    )}
+  </div>
+</div>
   );
 };

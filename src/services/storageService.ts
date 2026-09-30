@@ -222,19 +222,20 @@ class StorageService {
     try {
       const data = localStorage.getItem(this.key(BASE_KEYS.ACTIVITIES));
       if (data) {
-        return JSON.parse(data);
+        const parsed = JSON.parse(data);
+        // If data contains the default mock activities (act-1, act-2...), purge and start fresh
+        if (Array.isArray(parsed) && parsed.some(a => typeof a?.id === 'string' && a.id.startsWith('act-'))) {
+          this.saveActivities([]);
+          return [];
+        }
+        return parsed;
       }
     } catch (e) {
       console.warn('Error reading activities from localStorage:', e);
     }
-    // Logged-in users start fresh; guests get sample data
-    if (this._activeUid) {
-      this.saveActivities([]);
-      return [];
-    }
-    const initial = getInitialActivities();
-    this.saveActivities(initial);
-    return initial;
+    // Start completely empty
+    this.saveActivities([]);
+    return [];
   }
 
   public saveActivities(activities: Activity[], userId?: string | null): void {
@@ -319,27 +320,33 @@ class StorageService {
     try {
       const data = localStorage.getItem(this.key(BASE_KEYS.STREAK));
       if (data) {
-        return JSON.parse(data);
+        const parsed = JSON.parse(data);
+        // If it was the sample 7-day streak, reset to fresh 0
+        if (parsed?.currentStreakDays === 7 && parsed?.longestStreakDays === 14) {
+          const fresh = this.getFreshStreak();
+          this.saveStreak(fresh);
+          return fresh;
+        }
+        return parsed;
       }
     } catch (e) {
       console.warn('Error reading streak:', e);
     }
-    // Logged-in users start from zero; guests get sample streak
-    if (this._activeUid) {
-      const fresh: UserStreak = {
-        currentStreakDays: 0,
-        longestStreakDays: 0,
-        totalCompletedActivities: 0,
-        totalFocusSessions: 0,
-        totalFocusMinutes: 0,
-        lastActiveDate: getTodayDateString(),
-        achievements: [],
-      };
-      this.saveStreak(fresh);
-      return fresh;
-    }
-    this.saveStreak(INITIAL_STREAK);
-    return INITIAL_STREAK;
+    const fresh = this.getFreshStreak();
+    this.saveStreak(fresh);
+    return fresh;
+  }
+
+  private getFreshStreak(): UserStreak {
+    return {
+      currentStreakDays: 0,
+      longestStreakDays: 0,
+      totalCompletedActivities: 0,
+      totalFocusSessions: 0,
+      totalFocusMinutes: 0,
+      lastActiveDate: getTodayDateString(),
+      achievements: [],
+    };
   }
 
   public saveStreak(streak: UserStreak, userId?: string | null): void {

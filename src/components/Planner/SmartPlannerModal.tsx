@@ -43,54 +43,7 @@ export const SmartPlannerModal: React.FC = () => {
   const [plannerEnergy, setPlannerEnergy] = useState<EnergyLevel>(userEnergy);
 
   // Target Activities Pool
-  const [items, setItems] = useState<PlannerInputItem[]>([
-    {
-      id: 'plan-1',
-      title: 'Study React & State Architecture',
-      category: 'study',
-      durationMinutes: 120,
-      priority: 'high',
-      energyLevel: 'high',
-      preferredTime: 'morning',
-    },
-    {
-      id: 'plan-2',
-      title: 'Core Project Implementation',
-      category: 'work',
-      durationMinutes: 180,
-      priority: 'high',
-      energyLevel: 'high',
-      preferredTime: 'morning',
-    },
-    {
-      id: 'plan-3',
-      title: 'Strength & Conditioning Workout',
-      category: 'health',
-      durationMinutes: 60,
-      priority: 'medium',
-      energyLevel: 'high',
-      preferredTime: 'afternoon',
-    },
-    {
-      id: 'plan-4',
-      title: 'Grocery Shopping & Essentials',
-      category: 'personal',
-      durationMinutes: 60,
-      priority: 'low',
-      energyLevel: 'low',
-      preferredTime: 'evening',
-    },
-    {
-      id: 'plan-5',
-      title: 'Healthy Lunch Break',
-      category: 'health',
-      durationMinutes: 60,
-      priority: 'medium',
-      energyLevel: 'low',
-      isFixedTime: true,
-      fixedStartTime: '13:00',
-    },
-  ]);
+  const [items, setItems] = useState<PlannerInputItem[]>([]);
 
   // Quick New Item State
   const [newTitle, setNewTitle] = useState('');
@@ -349,7 +302,11 @@ export const SmartPlannerModal: React.FC = () => {
 
             {/* List of target items */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 220, overflowY: 'auto', marginBottom: 16 }}>
-              {items.map(item => {
+              {items.length === 0 ? (
+                <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13, backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', border: '1px dashed var(--border-subtle)' }}>
+                  {isRTL ? 'لا توجد أنشطة في قائمة التخطيط حالياً. أضف مهامك بالأسفل لتوليد جدولك التلقائي.' : 'No tasks in the planning pool yet. Add your activities below to generate an optimized day plan.'}
+                </div>
+              ) : items.map(item => {
                 const catMeta = CATEGORY_DEFINITIONS[item.category] || CATEGORY_DEFINITIONS.work;
                 return (
                   <div

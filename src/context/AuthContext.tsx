@@ -11,7 +11,8 @@ import {
   signInWithPopup,
   deleteUser,
   googleProvider,
-  FirebaseUser
+  FirebaseUser,
+  isFirebaseConfigured,
 } from '../services/firebase';
 import { UserProfileData } from '../types/user';
 import { storageService } from '../services/storageService';
@@ -20,6 +21,7 @@ interface AuthContextType {
   currentUser: FirebaseUser | null;
   loading: boolean;
   isGuest: boolean;
+  isFirebaseAvailable: boolean;
   userProfile: UserProfileData | null;
   loginWithEmail: (email: string, pass: string) => Promise<void>;
   signupWithEmail: (email: string, pass: string, name: string) => Promise<void>;
@@ -42,7 +44,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userProfile, setUserProfile] = useState<UserProfileData | null>(null);
 
   useEffect(() => {
-    if (!auth) {
+    // Load local profile if saved
+    const saved = storageService.getProfile();
+    if (saved) {
+      setUserProfile(saved);
+    }
+
+    if (!auth || !isFirebaseConfigured) {
       setIsGuest(true);
       storageService.setActiveUser(null);
       setLoading(false);
@@ -205,6 +213,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       currentUser,
       loading,
       isGuest,
+      isFirebaseAvailable: isFirebaseConfigured,
       userProfile,
       loginWithEmail,
       signupWithEmail,

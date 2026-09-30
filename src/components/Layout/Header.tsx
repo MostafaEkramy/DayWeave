@@ -121,7 +121,7 @@ export const Header: React.FC = () => {
             <button
               className="btn-icon"
               onClick={() => setIsAuthModalOpen(true)}
-              title={currentUser && !isGuest ? (userProfile?.displayName || currentUser.displayName || currentUser.email || t('header.profile')) : t('header.signIn')}
+              title={userProfile?.displayName || currentUser?.displayName || ((currentUser && !isGuest && currentUser.email) ? currentUser.email : t('header.profile'))}
               aria-label={t('header.profile')}
               style={profilePhoto ? { padding: 0, overflow: 'hidden' } : undefined}
             >
