@@ -1,0 +1,756 @@
+export type Language = 'en' | 'ar';
+
+export interface Translations {
+  [key: string]: string | Translations;
+}
+
+const en: Record<string, any> = {
+  // App brand
+  brand: {
+    name: 'DayWeave',
+    subtitle: 'TIME ARCHITECTURE',
+  },
+
+  // Sidebar
+  sidebar: {
+    newActivity: 'New Activity',
+    planMyDay: 'Plan My Day',
+    navigation: 'NAVIGATION',
+    dailyTimeline: 'Daily Timeline',
+    weekView: 'Week View',
+    templates: 'Templates',
+    dailyReview: 'Daily Review',
+    analytics: 'Analytics',
+    settings: 'Settings',
+    lightMode: 'Light Mode',
+    darkMode: 'Dark Mode',
+    language: 'العربية',
+  },
+
+  // Header
+  header: {
+    today: 'Today',
+    search: 'Search',
+    streak: 'Day Streak',
+    notifications: 'Notifications',
+    profile: 'Profile',
+    signIn: 'Sign in',
+    previousDay: 'Previous Day',
+    nextDay: 'Next Day',
+  },
+
+  // Today Overview
+  overview: {
+    localTime: 'Local Time:',
+    planned: 'PLANNED',
+    free: 'FREE',
+    completed: 'COMPLETED',
+    energy: 'ENERGY',
+    addActivity: 'Add Activity',
+    over: 'Over',
+    low: 'Low',
+    medium: 'Medium',
+    high: 'High',
+  },
+
+  // Timeline
+  timeline: {
+    free: 'free',
+    addBreak: 'Add Break',
+    addActivity: 'Add Activity',
+    overlap: 'Overlap',
+    dragToReschedule: 'Drag to reschedule',
+    markComplete: 'Mark complete',
+    markIncomplete: 'Mark incomplete',
+    startFocus: 'Start Focus Session',
+    editActivity: 'Edit Activity',
+    deleteActivity: 'Delete Activity',
+    fixedTime: 'Fixed Time Commitment',
+    dragToResize: 'Drag bottom to change duration',
+    focused: 'focused',
+    energyLabel: 'Energy',
+    removeConfirm: 'Remove "{title}" from timeline?',
+  },
+
+  // Conflict Banner
+  conflict: {
+    detected: 'Schedule Conflict Detected',
+    overlapBy: 'overlap by',
+    and: 'and',
+    autoResolve: 'Auto-Resolve Conflicts',
+  },
+
+  // Week View
+  week: {
+    jumpToSelected: 'Jump to Selected Day',
+    freeDay: 'Free day',
+    add: 'Add',
+    today: 'TODAY',
+    previousWeek: 'Previous Week',
+    nextWeek: 'Next Week',
+    shiftPrev: 'Shift to previous day',
+    shiftNext: 'Shift to next day',
+  },
+
+  // Templates
+  templates: {
+    title: 'Day Blueprint Templates',
+    description: 'Reusable daily architectures. Applying a template sets your schedule instantly.',
+    saveCurrentDay: 'Save Current Day as Template',
+    saveAsTemplate: 'Save Today as Template',
+    templateName: 'Template Name',
+    templateDesc: 'Description',
+    categoryTag: 'Category Tag',
+    tag: 'Tag',
+    descriptionLabel: 'Description',
+    saveTemplate: 'Save Template',
+    cancel: 'Cancel',
+    applyTo: 'Apply to',
+    applyToDate: 'Apply to Selected Day',
+    blocks: 'blocks',
+    tasksCount: 'tasks',
+    totalLabel: 'total',
+    moreActivities: 'more activities',
+    noActivities: 'No activities on this day to save as a template.',
+    editTemplate: 'Edit Template',
+    templateTitle: 'Template Title',
+    applyConfirmTitle: 'Apply "{title}" to {date}',
+    existingTasksWarning: 'This day already has {count} scheduled task(s). Choose how to apply:',
+    replaceEntireDay: 'Replace Entire Day',
+    replaceDesc: 'Clears existing activities on {date} and sets the template activities.',
+    mergeWithExisting: 'Merge with Existing Tasks',
+    mergeDesc: 'Keeps your current tasks and adds the template tasks alongside them.',
+    confirmApply: 'Confirm & Apply',
+    productivity: 'Productivity',
+    learning: 'Learning & Study',
+    wellness: 'Wellness & Rest',
+    weekend: 'Weekend',
+    sprint: 'Sprint / Intensive',
+    placeholder: {
+      name: 'e.g. Deep Work Sprint Day',
+      desc: 'What is this day best suited for?',
+      tag: 'e.g. Work, Study, Weekend',
+      notes: 'Optional notes regarding this routine...',
+    },
+  },
+
+  // Daily Review
+  review: {
+    title: 'Daily Review',
+    subtitle: 'Honest reflection and time audit for today.',
+    saveReview: 'Save Review',
+    totalPlanned: 'TOTAL PLANNED',
+    completed: 'COMPLETED',
+    focusTime: 'FOCUS TIME',
+    energyAlignment: 'ENERGY ALIGNMENT',
+    scheduledBlocks: 'Across {count} scheduled blocks',
+    executionRate: '{rate}% execution rate ({done}/{total})',
+    loggedFocusMode: 'Logged in Focus Mode',
+    dayPaceVs: 'Day pace vs {energy} energy',
+    categoryInvestment: 'Time Investment by Category',
+    howDidToday: 'How did today feel?',
+    reflectionNotes: 'Reflection & Notes',
+    reflectionPlaceholder: "What went well? What caused friction? How can tomorrow's timeline be optimized?",
+    productive: 'Productive',
+    steady: 'Steady',
+    tired: 'Tired',
+    overwhelmed: 'Overwhelmed',
+    reviewRecorded: 'Daily review recorded.',
+  },
+
+  // Analytics
+  analytics: {
+    title: 'Analytics & Insights',
+    subtitle: 'Track your productivity patterns and optimize your time architecture.',
+    totalActivities: 'TOTAL ACTIVITIES',
+    timePlanned: 'TIME PLANNED',
+    completionRate: 'COMPLETION RATE',
+    focusTime: 'FOCUS TIME',
+    currentStreak: 'CURRENT STREAK',
+    completedSuffix: 'completed',
+    sessionsLogged: 'sessions logged',
+    best: 'Best:',
+    days: 'days',
+    last7Days: 'Last 7 Days — Time Breakdown',
+    categoryDistribution: 'Time Investment by Category',
+    heatmapTitle: 'Productivity Heatmap — Peak Hours',
+    heatmapSubtitle: 'When are you most productive? Darker cells indicate more completed work during that hour.',
+    achievements: 'Achievements',
+    planned: 'Planned',
+    completedLabel: 'Completed',
+    heatmapTooltip: '{time} — {duration} completed',
+  },
+
+  // Settings
+  settings: {
+    title: 'Settings',
+    subtitle: 'Manage your preferences, data, and account.',
+    account: 'Account',
+    guestMode: 'Guest Mode',
+    guestDesc: 'Sign in to sync your data across devices.',
+    authenticatedUser: 'Authenticated user',
+    signedIn: 'Signed In',
+    signOut: 'Sign Out',
+    dailyTimeWindow: 'Daily Time Window',
+    timeWindowDesc: 'Set your typical wake and sleep times. Activities should fall within this window.',
+    wakeTime: 'Wake Time',
+    sleepTime: 'Sleep Time',
+    save: 'Save',
+    appearance: 'Appearance',
+    light: 'Light',
+    dark: 'Dark',
+    dataManagement: 'Data Management',
+    exportData: 'Export Data',
+    exportDesc: 'Download a JSON backup of all your activities, templates, and stats.',
+    importData: 'Import Data',
+    importDesc: 'Restore from a previously exported JSON backup file.',
+    deleteAllData: 'Delete All Data',
+    deleteDesc: 'Permanently erase all activities, templates, reviews, and settings.',
+    deleteConfirmTitle: 'Delete All Data?',
+    deleteConfirmDesc: 'This will permanently delete all your activities, templates, streaks, reviews, and preferences. This action cannot be undone.',
+    deleteEverything: 'Delete Everything',
+    cancel: 'Cancel',
+    timeWindowUpdated: 'Time window updated',
+    exportSuccess: 'Data exported successfully!',
+    importSuccess: 'Data imported successfully! Reload the page to see changes.',
+    importError: 'Error: Invalid backup file',
+    dataDeleted: 'All data deleted. Reloading...',
+  },
+
+  // Categories
+  categories: {
+    study: 'Study',
+    work: 'Work',
+    health: 'Health',
+    personal: 'Personal',
+    social: 'Social',
+    entertainment: 'Entertainment',
+    rest: 'Rest',
+  },
+
+  // Priority
+  priority: {
+    low: 'Low',
+    medium: 'Medium',
+    high: 'High',
+    urgent: 'Urgent',
+  },
+
+  // Common
+  common: {
+    minutes: 'm',
+    hours: 'h',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+    save: 'Save',
+    delete: 'Delete',
+    edit: 'Edit',
+    close: 'Close',
+    noData: 'No data available',
+  },
+
+  // Activity Modal
+  activityModal: {
+    addTitle: 'Add Activity',
+    editTitle: 'Edit Activity',
+    nameLabel: 'Activity Name',
+    namePlaceholder: 'e.g. Deep Work on ML Algorithm',
+    category: 'Category',
+    duration: 'Duration',
+    durationMins: 'Duration (mins)',
+    startTime: 'Start Time',
+    priority: 'Priority',
+    energyRequirement: 'Energy Requirement',
+    suggested: 'AI Suggested',
+    preferredWindow: 'Preferred Time Window',
+    notes: 'Notes & Checklist',
+    notesPlaceholder: 'Optional notes or details...',
+    fixedCommitment: 'Fixed Time Commitment',
+    fixedDesc: 'Cannot be automatically shifted by smart scheduling engine',
+    saveActivity: 'Save Activity',
+    cancel: 'Cancel',
+    // Recurrence
+    recurringRoutine: 'Recurring Routine',
+    doesNotRepeat: 'Does not repeat',
+    daily: 'Daily',
+    weekdays: 'Weekdays (Mon-Fri)',
+    customDays: 'Custom Days',
+    monthly: 'Monthly',
+    // Priority options
+    lowPriority: 'Low Priority',
+    mediumPriority: 'Medium Priority',
+    highPriority: 'High Priority',
+    urgentPriority: 'Urgent',
+    // Energy options
+    lowEnergy: 'Low Energy (Gentle)',
+    mediumEnergy: 'Medium Energy',
+    highEnergy: 'High Energy (Deep Focus)',
+    // Backlog & Dependencies
+    addToBacklog: 'Add to Backlog (Save without scheduled time)',
+    prerequisites: 'Prerequisites (Tasks that must complete before this)',
+    // Validation
+    titleRequired: 'Activity title is required.',
+    durationInvalid: 'Duration must be greater than 0 minutes.',
+    overflowMidnight: 'Activity duration exceeds midnight. Ends at {time}.',
+    // Days of week
+    sun: 'Sun',
+    mon: 'Mon',
+    tue: 'Tue',
+    wed: 'Wed',
+    thu: 'Thu',
+    fri: 'Fri',
+    sat: 'Sat',
+  },
+
+  // Time Picker
+  timePicker: {
+    selectTime: 'Select Time',
+    quickSlots: 'Time Slots',
+    customTime: 'Hours & Mins',
+    allSlots: 'All',
+    morning: 'Morning',
+    afternoon: 'Afternoon',
+    evening: 'Evening',
+    night: 'Night',
+    now: 'Now',
+    am: 'AM',
+    pm: 'PM',
+    amLong: 'Morning (AM)',
+    pmLong: 'Evening (PM)',
+    hours: 'Hour',
+    minutes: 'Minutes',
+    quickPresets: 'Quick Presets',
+    step15: '15m slots',
+    step30: '30m slots',
+    customExact: 'Exact time',
+    done: 'Done',
+  },
+
+  // Toast messages
+  toast: {
+    activityAdded: 'Added "{title}"',
+    activityUpdated: 'Activity updated',
+    activityRemoved: 'Activity removed',
+    completed: 'Completed "{title}"!',
+    energySet: 'Energy set to {level}',
+    conflictsResolved: 'Schedule conflicts resolved cleanly.',
+    templateApplied: 'Applied "{title}" template.',
+    templateSaved: 'Template "{title}" saved to library.',
+    dailyReviewSaved: 'Daily review saved.',
+  },
+
+  // Smart Planner (Plan My Day)
+  smartPlanner: {
+    title: 'Plan My Day',
+    subtitle: 'Deterministic time constraint solver. Respects energy, buffers, and priorities.',
+    availableFrom: 'AVAILABLE FROM',
+    availableUntil: 'AVAILABLE UNTIL',
+    dayEnergyLevel: 'DAY ENERGY LEVEL',
+    highEnergyDesc: 'High Energy (Focus on deep work)',
+    mediumEnergyDesc: 'Medium Energy (Steady pacing)',
+    lowEnergyDesc: 'Low Energy (Gentle workload)',
+    autoInsertBreaks: 'Auto-Insert Breaks (15m)',
+    afterDeepFocus: 'After 90m deep focus',
+    targetPool: 'Target Activities Pool',
+    totalDuration: 'Total duration',
+    addPlaceholder: 'Add another activity...',
+    highPriority: 'High Priority',
+    mediumPriority: 'Medium',
+    lowPriority: 'Low',
+    highEnergy: 'High Energy',
+    mediumEnergy: 'Med Energy',
+    lowEnergy: 'Low Energy',
+    dayReady: 'Your day is ready.',
+    freeBuffer: 'Free Buffer:',
+    adjustReplan: 'Adjust & Re-plan',
+    cancel: 'Cancel',
+    acceptPlan: 'Accept Plan',
+    generatePlan: 'Generate Plan',
+    toastOrganized: 'Organized {count} activities for {date}!',
+  },
+};
+
+const ar: Record<string, any> = {
+  // App brand
+  brand: {
+    name: 'DayWeave',
+    subtitle: 'هندسة الوقت',
+  },
+
+  // Sidebar
+  sidebar: {
+    newActivity: 'نشاط جديد',
+    planMyDay: 'خطِّط يومي',
+    navigation: 'التنقل',
+    dailyTimeline: 'الجدول اليومي',
+    weekView: 'عرض الأسبوع',
+    templates: 'القوالب',
+    dailyReview: 'المراجعة اليومية',
+    analytics: 'التحليلات',
+    settings: 'الإعدادات',
+    lightMode: 'الوضع الفاتح',
+    darkMode: 'الوضع الداكن',
+    language: 'English',
+  },
+
+  // Header
+  header: {
+    today: 'اليوم',
+    search: 'بحث',
+    streak: 'يوم متتالي',
+    notifications: 'الإشعارات',
+    profile: 'الملف الشخصي',
+    signIn: 'تسجيل دخول',
+    previousDay: 'اليوم السابق',
+    nextDay: 'اليوم التالي',
+  },
+
+  // Today Overview
+  overview: {
+    localTime: 'الوقت المحلي:',
+    planned: 'المُخطَّط',
+    free: 'الحُر',
+    completed: 'المُنجَز',
+    energy: 'الطاقة',
+    addActivity: 'إضافة نشاط',
+    over: 'زيادة',
+    low: 'منخفض',
+    medium: 'متوسط',
+    high: 'مرتفع',
+  },
+
+  // Timeline
+  timeline: {
+    free: 'حُر',
+    addBreak: 'إضافة استراحة',
+    addActivity: 'إضافة نشاط',
+    overlap: 'تداخل',
+    dragToReschedule: 'اسحب لإعادة الجدولة',
+    markComplete: 'تعليم كمُنجَز',
+    markIncomplete: 'إلغاء الإنجاز',
+    startFocus: 'بدء جلسة تركيز',
+    editActivity: 'تعديل النشاط',
+    deleteActivity: 'حذف النشاط',
+    fixedTime: 'التزام بوقت ثابت',
+    dragToResize: 'اسحب للأسفل لتغيير المدة',
+    focused: 'تركيز',
+    energyLabel: 'طاقة',
+    removeConfirm: 'إزالة "{title}" من الجدول الزمني؟',
+  },
+
+  // Conflict Banner
+  conflict: {
+    detected: 'تم اكتشاف تعارض في الجدول',
+    overlapBy: 'تتداخل بـ',
+    and: 'و',
+    autoResolve: 'حل التعارضات تلقائياً',
+  },
+
+  // Week View
+  week: {
+    jumpToSelected: 'الانتقال لليوم المحدد',
+    freeDay: 'يوم حُر',
+    add: 'إضافة',
+    today: 'اليوم',
+    previousWeek: 'الأسبوع السابق',
+    nextWeek: 'الأسبوع التالي',
+    shiftPrev: 'نقل لليوم السابق',
+    shiftNext: 'نقل لليوم التالي',
+  },
+
+  // Templates
+  templates: {
+    title: 'قوالب تخطيط اليوم',
+    description: 'تصاميم يومية قابلة لإعادة الاستخدام. تطبيق قالب يضبط جدولك فوراً.',
+    saveCurrentDay: 'حفظ اليوم الحالي كقالب',
+    saveAsTemplate: 'حفظ اليوم كقالب',
+    templateName: 'اسم القالب',
+    templateDesc: 'الوصف',
+    categoryTag: 'تصنيف القالب',
+    tag: 'الوسم',
+    descriptionLabel: 'الوصف',
+    saveTemplate: 'حفظ القالب',
+    cancel: 'إلغاء',
+    applyTo: 'تطبيق على',
+    applyToDate: 'تطبيق على اليوم المحدد',
+    blocks: 'فترات',
+    tasksCount: 'مهام',
+    totalLabel: 'إجمالي',
+    moreActivities: 'أنشطة إضافية',
+    noActivities: 'لا توجد أنشطة في هذا اليوم لحفظها كقالب.',
+    editTemplate: 'تعديل القالب',
+    templateTitle: 'عنوان القالب',
+    applyConfirmTitle: 'تطبيق "{title}" على {date}',
+    existingTasksWarning: 'هذا اليوم يحتوي بالفعل على {count} مهمة مجدولة. اختر طريقة التطبيق:',
+    replaceEntireDay: 'استبدال اليوم بالكامل',
+    replaceDesc: 'يمسح الأنشطة الحالية في {date} ويضع أنشطة القالب.',
+    mergeWithExisting: 'دمج مع المهام الحالية',
+    mergeDesc: 'يحتفظ بمهامك الحالية ويضيف مهام القالب بجانبها.',
+    confirmApply: 'تأكيد والتطبيق',
+    productivity: 'الإنتاجية',
+    learning: 'التعلم والدراسة',
+    wellness: 'الصحة والراحة',
+    weekend: 'عطلة نهاية الأسبوع',
+    sprint: 'سباق / مكثّف',
+    placeholder: {
+      name: 'مثال: يوم العمل العميق',
+      desc: 'لأي نوع من الأيام هذا القالب مناسب؟',
+      tag: 'مثال: عمل، دراسة، عطلة',
+      notes: 'ملاحظات اختيارية حول هذا الروتين...',
+    },
+  },
+
+  // Daily Review
+  review: {
+    title: 'المراجعة اليومية',
+    subtitle: 'تأمل صادق ومراجعة للوقت اليوم.',
+    saveReview: 'حفظ المراجعة',
+    totalPlanned: 'إجمالي المُخطَّط',
+    completed: 'المُنجَز',
+    focusTime: 'وقت التركيز',
+    energyAlignment: 'توافق الطاقة',
+    scheduledBlocks: 'عبر {count} فترة مجدولة',
+    executionRate: 'نسبة التنفيذ {rate}% ({done}/{total})',
+    loggedFocusMode: 'مُسجَّل في وضع التركيز',
+    dayPaceVs: 'وتيرة اليوم مع طاقة {energy}',
+    categoryInvestment: 'توزيع الوقت حسب الفئة',
+    howDidToday: 'كيف كان شعورك اليوم؟',
+    reflectionNotes: 'التأملات والملاحظات',
+    reflectionPlaceholder: 'ما الذي سار جيداً؟ ما الذي سبب مشاكل؟ كيف يمكن تحسين جدول الغد؟',
+    productive: 'منتج',
+    steady: 'مستقر',
+    tired: 'متعب',
+    overwhelmed: 'مرهق',
+    reviewRecorded: 'تم حفظ المراجعة اليومية.',
+  },
+
+  // Analytics
+  analytics: {
+    title: 'التحليلات والرؤى',
+    subtitle: 'تتبع أنماط إنتاجيتك وحسّن هندسة وقتك.',
+    totalActivities: 'إجمالي الأنشطة',
+    timePlanned: 'الوقت المُخطَّط',
+    completionRate: 'نسبة الإنجاز',
+    focusTime: 'وقت التركيز',
+    currentStreak: 'السلسلة الحالية',
+    completedSuffix: 'مُنجَز',
+    sessionsLogged: 'جلسة مُسجَّلة',
+    best: 'الأفضل:',
+    days: 'يوم',
+    last7Days: 'آخر ٧ أيام — تحليل الوقت',
+    categoryDistribution: 'توزيع الوقت حسب الفئة',
+    heatmapTitle: 'خريطة الإنتاجية — ساعات الذروة',
+    heatmapSubtitle: 'متى تكون أكثر إنتاجية؟ الخلايا الداكنة تشير لعمل مُنجَز أكثر خلال تلك الساعة.',
+    achievements: 'الإنجازات',
+    planned: 'مُخطَّط',
+    completedLabel: 'مُنجَز',
+    heatmapTooltip: '{time} — {duration} مُنجَز',
+  },
+
+  // Settings
+  settings: {
+    title: 'الإعدادات',
+    subtitle: 'إدارة التفضيلات والبيانات والحساب.',
+    account: 'الحساب',
+    guestMode: 'وضع الزائر',
+    guestDesc: 'سجّل دخول لمزامنة بياناتك عبر الأجهزة.',
+    authenticatedUser: 'مستخدم مُصادق',
+    signedIn: 'مُسجَّل الدخول',
+    signOut: 'تسجيل خروج',
+    dailyTimeWindow: 'نافذة الوقت اليومية',
+    timeWindowDesc: 'حدد أوقات الاستيقاظ والنوم المعتادة. الأنشطة يجب أن تقع ضمن هذه النافذة.',
+    wakeTime: 'وقت الاستيقاظ',
+    sleepTime: 'وقت النوم',
+    save: 'حفظ',
+    appearance: 'المظهر',
+    light: 'فاتح',
+    dark: 'داكن',
+    dataManagement: 'إدارة البيانات',
+    exportData: 'تصدير البيانات',
+    exportDesc: 'تحميل نسخة احتياطية JSON لجميع أنشطتك وقوالبك وإحصائياتك.',
+    importData: 'استيراد البيانات',
+    importDesc: 'استعادة من ملف نسخة احتياطية JSON سابق.',
+    deleteAllData: 'حذف جميع البيانات',
+    deleteDesc: 'حذف نهائي لجميع الأنشطة والقوالب والمراجعات والإعدادات.',
+    deleteConfirmTitle: 'حذف جميع البيانات؟',
+    deleteConfirmDesc: 'سيتم حذف جميع أنشطتك وقوالبك وسلاسلك ومراجعاتك وتفضيلاتك نهائياً. لا يمكن التراجع عن هذا الإجراء.',
+    deleteEverything: 'حذف كل شيء',
+    cancel: 'إلغاء',
+    timeWindowUpdated: 'تم تحديث نافذة الوقت',
+    exportSuccess: 'تم تصدير البيانات بنجاح!',
+    importSuccess: 'تم استيراد البيانات بنجاح! أعد تحميل الصفحة لرؤية التغييرات.',
+    importError: 'خطأ: ملف نسخة احتياطية غير صالح',
+    dataDeleted: 'تم حذف جميع البيانات. جاري إعادة التحميل...',
+  },
+
+  // Categories
+  categories: {
+    study: 'دراسة',
+    work: 'عمل',
+    health: 'صحة',
+    personal: 'شخصي',
+    social: 'اجتماعي',
+    entertainment: 'ترفيه',
+    rest: 'راحة',
+  },
+
+  // Priority
+  priority: {
+    low: 'منخفض',
+    medium: 'متوسط',
+    high: 'مرتفع',
+    urgent: 'عاجل',
+  },
+
+  // Common
+  common: {
+    minutes: 'د',
+    hours: 'س',
+    confirm: 'تأكيد',
+    cancel: 'إلغاء',
+    save: 'حفظ',
+    delete: 'حذف',
+    edit: 'تعديل',
+    close: 'إغلاق',
+    noData: 'لا توجد بيانات',
+  },
+
+  // Activity Modal
+  activityModal: {
+    addTitle: 'إضافة نشاط',
+    editTitle: 'تعديل النشاط',
+    nameLabel: 'اسم النشاط',
+    namePlaceholder: 'مثال: عمل عميق على خوارزمية تعلم الآلة',
+    category: 'التصنيف',
+    duration: 'المدة',
+    durationMins: 'المدة (دقائق)',
+    startTime: 'وقت البدء',
+    priority: 'الأولوية',
+    energyRequirement: 'مستوى الطاقة المطلوب',
+    suggested: 'اقتراح ذكي',
+    preferredWindow: 'الفترة المفضلة',
+    notes: 'ملاحظات وقائمة مهام',
+    notesPlaceholder: 'ملاحظات أو تفاصيل اختيارية...',
+    fixedCommitment: 'موعد ثابت محدد',
+    fixedDesc: 'لا يمكن للمحرك الذكي إعادة جدولته أو تغييره تلقائياً',
+    saveActivity: 'حفظ النشاط',
+    cancel: 'إلغاء',
+    // Recurrence
+    recurringRoutine: 'روتين متكرر',
+    doesNotRepeat: 'لا يتكرر',
+    daily: 'يومي',
+    weekdays: 'أيام العمل (إثنين-جمعة)',
+    customDays: 'أيام مخصصة',
+    monthly: 'شهري',
+    // Priority options
+    lowPriority: 'أولوية منخفضة',
+    mediumPriority: 'أولوية متوسطة',
+    highPriority: 'أولوية عالية',
+    urgentPriority: 'عاجل',
+    // Energy options
+    lowEnergy: 'طاقة منخفضة (خفيف)',
+    mediumEnergy: 'طاقة متوسطة',
+    highEnergy: 'طاقة عالية (تركيز عميق)',
+    // Backlog & Dependencies
+    addToBacklog: 'إضافة للقائمة المعلقة (حفظ بدون وقت محدد)',
+    prerequisites: 'متطلبات مسبقة (مهام يجب إنجازها قبل هذه)',
+    // Validation
+    titleRequired: 'عنوان النشاط مطلوب.',
+    durationInvalid: 'المدة يجب أن تكون أكبر من 0 دقيقة.',
+    overflowMidnight: 'مدة النشاط تتجاوز منتصف الليل. ينتهي في {time}.',
+    // Days of week
+    sun: 'أحد',
+    mon: 'إثن',
+    tue: 'ثلا',
+    wed: 'أرب',
+    thu: 'خمي',
+    fri: 'جمع',
+    sat: 'سبت',
+  },
+
+  // Time Picker
+  timePicker: {
+    selectTime: 'تحديد الوقت',
+    quickSlots: 'قائمة الأوقات',
+    customTime: 'ساعات ودقائق',
+    allSlots: 'الكل',
+    morning: 'الصباح',
+    afternoon: 'الظهيرة',
+    evening: 'المساء',
+    night: 'الليل',
+    now: 'الآن',
+    am: 'ص',
+    pm: 'م',
+    amLong: 'صباحاً (ص)',
+    pmLong: 'مساءً (م)',
+    hours: 'الساعة',
+    minutes: 'الدقيقة',
+    quickPresets: 'أوقات سريعة',
+    step15: '١٥ دقيقة',
+    step30: '٣٠ دقيقة',
+    customExact: 'وقت محدد',
+    done: 'تم',
+  },
+
+  // Toast messages
+  toast: {
+    activityAdded: 'تمت إضافة "{title}"',
+    activityUpdated: 'تم تحديث النشاط',
+    activityRemoved: 'تم حذف النشاط',
+    completed: 'أُنجِز "{title}"!',
+    energySet: 'الطاقة: {level}',
+    conflictsResolved: 'تم حل تعارضات الجدول بنجاح.',
+    templateApplied: 'تم تطبيق قالب "{title}".',
+    templateSaved: 'تم حفظ قالب "{title}" في المكتبة.',
+    dailyReviewSaved: 'تم حفظ المراجعة اليومية.',
+  },
+
+  // Smart Planner (Plan My Day)
+  smartPlanner: {
+    title: 'خطِّط يومي',
+    subtitle: 'تنظيم ذكي للوقت يراعي مستويات طاقتك والأولويات وفترات الراحة.',
+    availableFrom: 'متاح من',
+    availableUntil: 'متاح حتى',
+    dayEnergyLevel: 'مستوى طاقة اليوم',
+    highEnergyDesc: 'طاقة عالية (تركيز على المهام العميقة)',
+    mediumEnergyDesc: 'طاقة متوسطة (وتيرة متوازنة)',
+    lowEnergyDesc: 'طاقة منخفضة (مهام خفيفة)',
+    autoInsertBreaks: 'إدراج فترات راحة تلقائياً (١٥ دقيقة)',
+    afterDeepFocus: 'بعد كل ٩٠ دقيقة تركيز عميق',
+    targetPool: 'مجموعة الأنشطة المستهدفة',
+    totalDuration: 'إجمالي المدة',
+    addPlaceholder: 'إضافة نشاط آخر...',
+    highPriority: 'أولوية عالية',
+    mediumPriority: 'متوسطة',
+    lowPriority: 'منخفضة',
+    highEnergy: 'طاقة عالية',
+    mediumEnergy: 'طاقة متوسطة',
+    lowEnergy: 'طاقة منخفضة',
+    dayReady: 'تم تنظيم وإعداد يومك.',
+    freeBuffer: 'وقت احتياطي حر:',
+    adjustReplan: 'تعديل وإعادة التخطيط',
+    cancel: 'إلغاء',
+    acceptPlan: 'اعتماد الخطة',
+    generatePlan: 'توليد الخطة',
+    toastOrganized: 'تم تنظيم {count} نشاط ليوم {date}!',
+  },
+};
+
+export const translations: Record<Language, Record<string, any>> = { en, ar };
+
+/**
+ * Get a nested translation value by dot-separated key.
+ * Example: getTranslation(en, 'sidebar.newActivity') => 'New Activity'
+ */
+export function getTranslation(lang: Record<string, any>, key: string): string {
+  const parts = key.split('.');
+  let current: any = lang;
+  for (const part of parts) {
+    if (current && typeof current === 'object' && part in current) {
+      current = current[part];
+    } else {
+      return key; // fallback to key if not found
+    }
+  }
+  return typeof current === 'string' ? current : key;
+}

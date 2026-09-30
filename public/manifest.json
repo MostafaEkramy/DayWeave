@@ -1,0 +1,17 @@
+{
+  "name": "DayWeave — Visual Daily Time-Management OS",
+  "short_name": "DayWeave",
+  "description": "Visual daily time-management and productivity OS with smart scheduling and energy tracking.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090B",
+  "theme_color": "#3B82F6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
