@@ -580,7 +580,7 @@ input::placeholder, textarea::placeholder {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16;
+  gap: 16px;
 }
 
 .app-header__date-nav {
@@ -600,6 +600,7 @@ input::placeholder, textarea::placeholder {
   min-width: 100px;
   text-align: center;
   font-family: var(--font-sans);
+  white-space: nowrap;
 }
 
 .app-header__today-btn {
@@ -653,6 +654,171 @@ input::placeholder, textarea::placeholder {
   height: 7px;
   border-radius: 50%;
   background-color: var(--status-danger);
+}
+
+/* ==========================================================================
+   Today Overview Widget
+   ========================================================================== */
+
+.today-overview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
+
+.today-overview__header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.today-overview__title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.today-overview__time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.today-overview__time-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.today-overview__metrics {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.today-overview__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.today-overview__metric-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.today-overview__metric-value {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.today-overview__divider {
+  width: 1px;
+  height: 28px;
+  background-color: var(--border-subtle);
+}
+
+.today-overview__metric--progress {
+  min-width: 110px;
+}
+
+.today-overview__progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.today-overview__progress-pct {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.today-overview__progress-bar {
+  width: 100%;
+  height: 4px;
+  background-color: var(--bg-subtle);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.today-overview__progress-fill {
+  height: 100%;
+  background-color: var(--accent-primary);
+  transition: width 0.3s ease;
+}
+
+.today-overview__controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.today-overview__energy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.today-overview__energy-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.today-overview__energy-pills {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  border: 1px solid var(--border-subtle);
+}
+
+.today-overview__energy-btn {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--radius-xs);
+  text-transform: capitalize;
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.today-overview__energy-btn--selected {
+  background-color: var(--bg-surface);
+  color: var(--accent-primary);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--border-subtle);
+}
+
+.today-overview__add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 14px;
 }
 
 /* ==========================================================================
@@ -804,12 +970,162 @@ input::placeholder, textarea::placeholder {
     margin-left: 0;
   }
 
-  .main-content {
-    padding: 12px 14px 100px 14px;
+  :root {
+    --timeline-gutter-width: 52px;
   }
 
+  .main-content {
+    padding: 10px 10px 96px 10px;
+  }
+
+  /* Compact Header for Mobile (Samsung 360px compatible) */
   .app-header__inner {
-    padding: 10px 14px;
+    padding: 7px 10px;
+    gap: 6px;
+  }
+
+  .app-header__date-nav {
+    gap: 2px;
+    padding: 2px 4px;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .app-header__date-label {
+    font-size: 12px;
+    padding: 0 4px;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .app-header__date-nav .btn-icon-subtle {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+  }
+
+  .app-header__today-btn {
+    font-size: 10px;
+    padding: 1px 5px;
+    margin-left: 2px;
+  }
+
+  .app-header__actions {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .app-header__actions .btn-icon {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+  }
+
+  .app-header__streak-btn {
+    padding: 4px 6px;
+    gap: 3px;
+    font-size: 11px;
+  }
+
+  .app-header__streak-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* Today Overview on Mobile */
+  .today-overview {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  .today-overview__header {
+    width: 100%;
+  }
+
+  .today-overview__title {
+    font-size: 16px;
+  }
+
+  .today-overview__metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.15fr;
+    gap: 8px;
+    background-color: var(--bg-subtle);
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    align-items: center;
+  }
+
+  .today-overview__divider {
+    display: none;
+  }
+
+  .today-overview__metric {
+    gap: 1px;
+  }
+
+  .today-overview__metric-label {
+    font-size: 10px;
+  }
+
+  .today-overview__metric-value {
+    font-size: 13px;
+  }
+
+  .today-overview__metric--progress {
+    min-width: unset;
+  }
+
+  .today-overview__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .today-overview__energy {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .today-overview__energy-label {
+    display: none;
+  }
+
+  .today-overview__energy-pills {
+    padding: 2px;
+  }
+
+  .today-overview__energy-btn {
+    padding: 3px 6px;
+    font-size: 11px;
+  }
+
+  .today-overview__add-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+    margin-left: 0;
+  }
+
+  /* Empty Banner on Mobile */
+  .timeline__empty-banner {
+    padding: 10px 12px !important;
+    margin-bottom: 12px !important;
+    gap: 8px !important;
+  }
+
+  .timeline__empty-banner p {
+    font-size: 11px !important;
+  }
+
+  .timeline__empty-add-btn {
+    display: none !important;
   }
 
   /* Show Mobile Bottom Nav */
@@ -1039,6 +1355,12 @@ input::placeholder, textarea::placeholder {
   [dir="rtl"] .fab {
     right: auto;
     left: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  [dir="rtl"] .app-header__today-btn {
+    margin-right: 2px;
   }
 }
 

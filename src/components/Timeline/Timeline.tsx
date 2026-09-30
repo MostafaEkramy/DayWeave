@@ -241,6 +241,7 @@ export const Timeline: React.FC = () => {
       {/* Empty Day Welcoming Indicator */}
       {todayActivities.length === 0 && (
         <div 
+          className="timeline__empty-banner"
           style={{
             padding: '14px 18px',
             backgroundColor: 'var(--bg-surface)',
@@ -250,7 +251,8 @@ export const Timeline: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: 16,
-            flexWrap: 'wrap'
+            flexWrap: 'wrap',
+            marginBottom: 20
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -269,7 +271,7 @@ export const Timeline: React.FC = () => {
               setEditingActivity(null);
               setIsActivityModalOpen(true);
             }}
-            className="btn-primary"
+            className="btn-primary timeline__empty-add-btn"
             style={{ fontSize: 12, padding: '6px 14px' }}
           >
             <Plus size={14} />

@@ -28,10 +28,10 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { path: '/', labelKey: 'sidebar.dailyTimeline', shortLabelKey: 'sidebar.dailyTimeline', icon: <Clock size={20} /> },
+  { path: '/', labelKey: 'sidebar.dailyTimeline', shortLabelKey: 'sidebar.timelineShort', icon: <Clock size={20} /> },
   { path: '/week', labelKey: 'sidebar.weekView', shortLabelKey: 'sidebar.weekView', icon: <CalendarDays size={20} /> },
   { path: '/templates', labelKey: 'sidebar.templates', shortLabelKey: 'sidebar.templates', icon: <BookmarkCheck size={20} /> },
-  { path: '/review', labelKey: 'sidebar.dailyReview', shortLabelKey: 'sidebar.dailyReview', icon: <BarChart3 size={20} /> },
+  { path: '/review', labelKey: 'sidebar.dailyReview', shortLabelKey: 'sidebar.reviewShort', icon: <BarChart3 size={20} /> },
   { path: '/analytics', labelKey: 'sidebar.analytics', shortLabelKey: 'sidebar.analytics', icon: <TrendingUp size={20} /> },
   { path: '/settings', labelKey: 'sidebar.settings', shortLabelKey: 'sidebar.settings', icon: <Settings size={20} /> },
 ];
