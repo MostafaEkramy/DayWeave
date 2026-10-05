@@ -356,63 +356,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const loginWithGoogle = async () => {
-    // 1. Try Firebase Google Popup if configured
-    if (auth && isFirebaseConfigured) {
-      try {
-        const userCredential = await signInWithPopup(auth, googleProvider);
-        if (userCredential.user) {
-          const userObj: AppUser = {
-            uid: userCredential.user.uid,
-            email: userCredential.user.email,
-            displayName: userCredential.user.displayName || 'Google User',
-            photoURL: userCredential.user.photoURL || '',
-            isAnonymous: false,
-          };
-          setCurrentUser(userObj);
-          setIsGuest(false);
-          storageService.setActiveUser(userCredential.user.uid);
-          localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(userObj));
-          const initial: UserProfileData = {
-            displayName: userObj.displayName || 'Google User',
-            photoURL: userObj.photoURL || '',
-            bio: '',
-            goal: '',
-            updatedAt: new Date().toISOString(),
-          };
-          setUserProfile(initial);
-          storageService.saveProfile(initial, userCredential.user.uid);
-          return;
-        }
-      } catch (err: any) {
-        if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') {
-          return;
-        }
-        console.warn('Firebase Google popup issue, using seamless local Google account:', err);
-      }
+    if (!auth || !isFirebaseConfigured) {
+      const err: any = new Error('Firebase configuration is missing or invalid.');
+      err.code = 'auth/configuration-missing';
+      throw err;
     }
 
-    // 2. Seamless Local Google Account fallback
-    const uid = 'usr_g_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
-    const googleUser: AppUser = {
-      uid,
-      email: 'user.google@gmail.com',
-      displayName: 'Google User',
-      photoURL: '',
-      isAnonymous: false,
-    };
-    localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(googleUser));
-    storageService.setActiveUser(uid);
-    setCurrentUser(googleUser);
-    setIsGuest(false);
-    const initial: UserProfileData = {
-      displayName: 'Google User',
-      photoURL: '',
-      bio: '',
-      goal: '',
-      updatedAt: new Date().toISOString(),
-    };
-    setUserProfile(initial);
-    storageService.saveProfile(initial, uid);
+    try {
+      const userCredential = await signInWithPopup(auth, googleProvider);
+      if (userCredential && userCredential.user) {
+        const u = userCredential.user;
+        const userObj: AppUser = {
+          uid: u.uid,
+          email: u.email,
+          displayName: u.displayName || u.email?.split('@')[0] || 'Google User',
+          photoURL: u.photoURL || '',
+          isAnonymous: false,
+        };
+        setCurrentUser(userObj);
+        setIsGuest(false);
+        storageService.setActiveUser(u.uid);
+        localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(userObj));
+
+        const savedProfile = storageService.getProfile();
+        const profileToSave: UserProfileData = {
+          displayName: userObj.displayName || '',
+          photoURL: userObj.photoURL || '',
+          bio: savedProfile?.bio || '',
+          goal: savedProfile?.goal || '',
+          updatedAt: new Date().toISOString(),
+        };
+        setUserProfile(profileToSave);
+        storageService.saveProfile(profileToSave, u.uid);
+        return;
+      }
+    } catch (err: any) {
+      if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') {
+        return;
+      }
+      console.error('Firebase Google popup error:', err);
+      throw err;
+    }
   };
 
   const loginAsGuest = async () => {

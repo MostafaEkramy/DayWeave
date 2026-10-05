@@ -243,8 +243,20 @@ export const AuthModal: React.FC = () => {
       showToast(isAr ? 'تم تسجيل الدخول بحساب جوجل بنجاح!' : 'Signed in with Google successfully!');
       setIsAuthModalOpen(false);
     } catch (err: any) {
-      console.error(err);
-      setError(isAr ? 'تعذر تسجيل الدخول بحساب جوجل. يرجى المحاولة مرة أخرى.' : 'Google sign-in failed. Please try again.');
+      console.error('Google login error:', err);
+      let msg = isAr ? 'تعذر تسجيل الدخول بحساب جوجل. يرجى المحاولة مرة أخرى.' : 'Google sign-in failed. Please try again.';
+      if (err?.code === 'auth/popup-blocked') {
+        msg = isAr ? 'المتصفح حظر نافذة تسجيل الدخول المنبثقة. يرجى السماح بالنوافذ المنبثقة (Popups).' : 'Popup was blocked by your browser. Please allow popups for this site.';
+      } else if (err?.code === 'auth/operation-not-allowed') {
+        msg = isAr ? 'خاصية الدخول بجوجل غير مفعلة في لوحة تحكم Firebase (Authentication > Sign-in method > Google).' : 'Google Sign-in is not enabled in Firebase Console (Authentication > Sign-in method > Google).';
+      } else if (err?.code === 'auth/unauthorized-domain') {
+        msg = isAr ? 'هذا النطاق غير مصرح به في Firebase Console (Authorized domains).' : 'This domain is not authorized in Firebase Console.';
+      } else if (err?.code === 'auth/network-request-failed') {
+        msg = isAr ? 'تعذر الاتصال بالإنترنت، يرجى التحقق من اتصالك.' : 'Network error. Please check your internet connection.';
+      } else if (err?.message) {
+        msg = err.message;
+      }
+      setError(msg);
     } finally {
       setGoogleLoading(false);
     }
