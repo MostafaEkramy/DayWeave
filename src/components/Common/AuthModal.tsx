@@ -1,17 +1,55 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { User, LogOut, X, AlertCircle, Camera, Pencil, Target, FileText, Check, Loader2, Trash2, RefreshCw } from 'lucide-react';
+import { 
+  User, 
+  LogOut, 
+  X, 
+  AlertCircle, 
+  Camera, 
+  Pencil, 
+  Target, 
+  FileText, 
+  Check, 
+  Loader2, 
+  Trash2, 
+  RefreshCw,
+  Mail,
+  Lock,
+  UserCheck
+} from 'lucide-react';
+
+const GoogleIcon: React.FC<{ size?: number }> = ({ size = 18 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+    <path
+      fill="#4285F4"
+      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
+    />
+    <path
+      fill="#34A853"
+      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"
+    />
+    <path
+      fill="#FBBC05"
+      d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+    />
+    <path
+      fill="#EA4335"
+      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+    />
+  </svg>
+);
 
 export const AuthModal: React.FC = () => {
   const { isAuthModalOpen, setIsAuthModalOpen, showToast, syncStatus } = useApp();
   const { 
     currentUser, 
     isGuest, 
-    isFirebaseAvailable,
     loginWithEmail, 
     signupWithEmail, 
+    loginWithGoogle,
     loginAsGuest, 
     logout, 
     resetPassword,
@@ -19,16 +57,17 @@ export const AuthModal: React.FC = () => {
     saveUserProfile,
     deleteAccount,
   } = useAuth();
-  const { language } = useLanguage();
+  const { language, isRTL } = useLanguage();
   const isAr = language === 'ar';
 
-  const [activeTab, setActiveTab] = useState<'profile' | 'cloud'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'cloud'>(currentUser && !isGuest ? 'profile' : 'cloud');
   const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // Profile editing state
   const [editName, setEditName] = useState('');
@@ -55,6 +94,9 @@ export const AuthModal: React.FC = () => {
       setEditGoal(userProfile?.goal || '');
       setEditPhotoURL(userProfile?.photoURL || currentUser?.photoURL || '');
       setError(null);
+      if (!currentUser || isGuest) {
+        setActiveTab('cloud');
+      }
     }
   }, [currentUser, isGuest, isAuthModalOpen, userProfile]);
 
@@ -101,13 +143,11 @@ export const AuthModal: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate mime type
     if (!file.type.startsWith('image/')) {
       showToast(isAr ? 'يرجى اختيار ملف صورة صالح' : 'Please select a valid image file');
       return;
     }
 
-    // Validate file size (max 2MB for base64 storage)
     if (file.size > 2 * 1024 * 1024) {
       showToast(isAr ? 'الصورة كبيرة جداً (الحد الأقصى 2MB)' : 'Image too large (max 2MB)');
       return;
@@ -121,8 +161,6 @@ export const AuthModal: React.FC = () => {
       showToast(isAr ? 'تم تحديث الصورة' : 'Photo updated');
     };
     reader.readAsDataURL(file);
-
-    // Reset input so the same file can be re-selected
     e.target.value = '';
   };
 
@@ -197,6 +235,21 @@ export const AuthModal: React.FC = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      await loginWithGoogle();
+      showToast(isAr ? 'تم تسجيل الدخول بحساب جوجل بنجاح!' : 'Signed in with Google successfully!');
+      setIsAuthModalOpen(false);
+    } catch (err: any) {
+      console.error(err);
+      setError(isAr ? 'تعذر تسجيل الدخول بحساب جوجل. يرجى المحاولة مرة أخرى.' : 'Google sign-in failed. Please try again.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   const handleGuestMode = async () => {
     setLoading(true);
     try {
@@ -263,12 +316,13 @@ export const AuthModal: React.FC = () => {
     fontFamily: 'var(--font-sans)',
   };
 
-  return (
+  return createPortal(
     <div
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.55)',
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
+        backdropFilter: 'blur(4px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -276,17 +330,18 @@ export const AuthModal: React.FC = () => {
         padding: 16,
       }}
       onClick={() => setIsAuthModalOpen(false)}
+      dir={isRTL ? 'rtl' : 'ltr'}
     >
       <div
         style={{
           width: '100%',
-          maxWidth: currentUser && !isGuest ? 480 : 420,
+          maxWidth: currentUser && !isGuest ? 480 : 440,
           maxHeight: '90vh',
           overflowY: 'auto',
           backgroundColor: 'var(--bg-surface)',
           border: '1px solid var(--border-medium)',
           borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-dropdown)',
+          boxShadow: 'var(--shadow-modal)',
           padding: 24,
         }}
         className="animate-fade-in"
@@ -297,8 +352,8 @@ export const AuthModal: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div 
               style={{ 
-                width: 32, 
-                height: 32, 
+                width: 34, 
+                height: 34, 
                 borderRadius: 'var(--radius-sm)', 
                 backgroundColor: 'var(--accent-primary-subtle)', 
                 color: 'var(--accent-primary)',
@@ -307,22 +362,22 @@ export const AuthModal: React.FC = () => {
                 justifyContent: 'center'
               }}
             >
-              {activeTab === 'profile' ? <User size={16} /> : <RefreshCw size={16} />}
+              {activeTab === 'profile' ? <User size={18} /> : <UserCheck size={18} />}
             </div>
             <div>
-              <h3 style={{ fontSize: 16, fontWeight: 700 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
                 {activeTab === 'profile' 
                   ? (isAr ? 'الملف الشخصي' : 'User Profile') 
-                  : (isAr ? 'تسجيل الدخول والحساب' : 'Account & Sign In')}
+                  : (isAr ? 'تسجيل الدخول والتسجيل' : 'Account & Authentication')}
               </h3>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
                 {activeTab === 'profile' 
                   ? (isAr ? 'تخصيص معلوماتك وصورتك الشخصية' : 'Personalize your profile and daily goals') 
-                  : (isAr ? 'تسجيل الدخول أو إنشاء حساب جديد بالبريد الإلكتروني' : 'Sign in or create a new account with email')}
+                  : (isAr ? 'التسجيل عبر حساب جوجل أو البريد الإلكتروني' : 'Sign in with Google or Email address')}
               </p>
             </div>
           </div>
-          <button className="btn-icon-subtle" onClick={() => setIsAuthModalOpen(false)}>
+          <button className="btn-icon" onClick={() => setIsAuthModalOpen(false)}>
             <X size={16} />
           </button>
         </div>
@@ -331,9 +386,31 @@ export const AuthModal: React.FC = () => {
         <div style={{ display: 'flex', gap: 6, marginBottom: 18, borderBottom: '1px solid var(--border-subtle)', paddingBottom: 10 }}>
           <button
             type="button"
+            onClick={() => { setActiveTab('cloud'); setError(null); }}
+            style={{
+              padding: '7px 14px',
+              borderRadius: 'var(--radius-xs)',
+              fontSize: 12,
+              fontWeight: 600,
+              backgroundColor: activeTab === 'cloud' ? 'var(--accent-primary-subtle)' : 'transparent',
+              color: activeTab === 'cloud' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <UserCheck size={14} />
+            <span>{isAr ? 'الحساب والتسجيل' : 'Account & Login'}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => { setActiveTab('profile'); setError(null); }}
             style={{
-              padding: '6px 14px',
+              padding: '7px 14px',
               borderRadius: 'var(--radius-xs)',
               fontSize: 12,
               fontWeight: 600,
@@ -350,34 +427,14 @@ export const AuthModal: React.FC = () => {
             <User size={14} />
             <span>{isAr ? 'الملف الشخصي' : 'Profile'}</span>
           </button>
-          <button
-            type="button"
-            onClick={() => { setActiveTab('cloud'); setError(null); }}
-            style={{
-              padding: '6px 14px',
-              borderRadius: 'var(--radius-xs)',
-              fontSize: 12,
-              fontWeight: 600,
-              backgroundColor: activeTab === 'cloud' ? 'var(--accent-primary-subtle)' : 'transparent',
-              color: activeTab === 'cloud' ? 'var(--accent-primary)' : 'var(--text-secondary)',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              transition: 'all 0.15s ease'
-            }}
-          >
-            <RefreshCw size={14} />
-            <span>{isAr ? 'الحساب والتسجيل' : 'Account & Login'}</span>
-          </button>
         </div>
 
         {error && (
           <div 
             style={{ 
-              padding: '8px 12px', 
+              padding: '10px 14px', 
               backgroundColor: 'var(--status-danger-bg)', 
+              border: '1px solid var(--status-danger-border)',
               borderRadius: 'var(--radius-sm)', 
               color: 'var(--status-danger)', 
               fontSize: 12, 
@@ -387,7 +444,7 @@ export const AuthModal: React.FC = () => {
               marginBottom: 16 
             }}
           >
-            <AlertCircle size={14} />
+            <AlertCircle size={15} style={{ flexShrink: 0 }} />
             <span>{error}</span>
           </div>
         )}
@@ -546,10 +603,10 @@ export const AuthModal: React.FC = () => {
             {/* ===== EMAIL (read-only) ===== */}
             <div>
               <div style={fieldLabelStyle}>
-                <span style={{ fontSize: 12 }}>✉</span>
+                <Mail size={12} />
                 <span>{isAr ? 'البريد الإلكتروني' : 'Email'}</span>
               </div>
-              <div style={{ ...fieldRowStyle, cursor: 'default', opacity: 0.8 }}>
+              <div style={{ ...fieldRowStyle, cursor: 'default', opacity: 0.85 }}>
                 <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>
                   {currentUser?.email || (isAr ? 'حساب محلي (تخزين في المتصفح)' : 'Local Profile (Stored in browser)')}
                 </span>
@@ -716,7 +773,7 @@ export const AuthModal: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '10px 12px',
+              padding: '10px 14px',
               borderRadius: 'var(--radius-sm)',
               backgroundColor: 'var(--bg-subtle)',
               border: '1px solid var(--border-subtle)',
@@ -755,7 +812,7 @@ export const AuthModal: React.FC = () => {
 
                 {/* Account Deletion Danger Zone */}
                 <div style={{
-                  marginTop: 12,
+                  marginTop: 8,
                   paddingTop: 12,
                   borderTop: '1px solid var(--border-subtle)',
                 }}>
@@ -772,7 +829,7 @@ export const AuthModal: React.FC = () => {
                         alignItems: 'center',
                         gap: 6,
                         padding: '4px 0',
-                        opacity: 0.8,
+                        opacity: 0.85,
                       }}
                     >
                       <Trash2 size={13} />
@@ -852,20 +909,21 @@ export const AuthModal: React.FC = () => {
             )}
           </div>
         ) : (
+          /* ===== AUTHENTICATION & LOGIN TAB ===== */
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {currentUser && !isGuest ? (
               <div style={{
-                padding: '16px',
+                padding: '18px',
                 backgroundColor: 'var(--bg-subtle)',
                 borderRadius: 'var(--radius-md)',
                 border: '1px solid var(--border-subtle)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 12,
+                gap: 14,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                    {isAr ? 'مسجل الدخول كـ:' : 'Signed in as:'}
+                    {isAr ? 'الحساب الحالي:' : 'Current Account:'}
                   </div>
                   <span style={{
                     fontSize: 11,
@@ -875,17 +933,36 @@ export const AuthModal: React.FC = () => {
                     padding: '2px 8px',
                     borderRadius: 'var(--radius-xs)',
                   }}>
-                    {isAr ? 'حساب نشط' : 'Active Account'}
+                    {isAr ? 'نشط ومسجل' : 'Active & Signed In'}
                   </span>
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
-                  {currentUser.email}
-                </div>
-                {currentUser.displayName && (
-                  <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-                    {currentUser.displayName}
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--accent-primary-subtle)',
+                    color: 'var(--accent-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    flexShrink: 0
+                  }}>
+                    {currentUser.email ? currentUser.email[0].toUpperCase() : 'U'}
                   </div>
-                )}
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {currentUser.displayName || currentUser.email}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                      {currentUser.email}
+                    </div>
+                  </div>
+                </div>
+
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -898,114 +975,183 @@ export const AuthModal: React.FC = () => {
               </div>
             ) : (
               <>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {mode === 'signup' && (
-                <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>
-                    {isAr ? 'الاسم الكامل' : 'Full Name'}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder={isAr ? 'مثال: أحمد محمد' : 'e.g. Alex Morgan'}
-                    value={displayName}
-                    onChange={e => setDisplayName(e.target.value)}
-                  />
+                {/* 1. GOOGLE SIGN IN BUTTON */}
+                <button
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  disabled={googleLoading || loading}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 10,
+                    width: '100%',
+                    padding: '10px 16px',
+                    backgroundColor: 'var(--bg-surface)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border-medium)',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: googleLoading ? 'wait' : 'pointer',
+                    boxShadow: 'var(--shadow-sm)',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-focus)';
+                    (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-subtle)';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-medium)';
+                    (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-surface)';
+                  }}
+                >
+                  {googleLoading ? (
+                    <Loader2 size={18} className="animate-spin" style={{ color: 'var(--accent-primary)' }} />
+                  ) : (
+                    <GoogleIcon size={18} />
+                  )}
+                  <span>{isAr ? 'متابعة باستخدام حساب جوجل' : 'Continue with Google'}</span>
+                </button>
+
+                {/* DIVIDER */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '2px 0' }}>
+                  <div style={{ flex: 1, height: 1, backgroundColor: 'var(--border-subtle)' }} />
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                    {isAr ? 'أو عبر البريد الإلكتروني' : 'or with email'}
+                  </span>
+                  <div style={{ flex: 1, height: 1, backgroundColor: 'var(--border-subtle)' }} />
                 </div>
-              )}
 
-              <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>
-                  {isAr ? 'البريد الإلكتروني' : 'Email Address'}
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                />
-              </div>
+                {/* 2. EMAIL SIGN IN / REGISTRATION FORM */}
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {mode === 'signup' && (
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 5 }}>
+                        <User size={13} />
+                        <span>{isAr ? 'الاسم الكامل' : 'Full Name'}</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder={isAr ? 'مثال: أحمد محمد' : 'e.g. Alex Morgan'}
+                        value={displayName}
+                        onChange={e => setDisplayName(e.target.value)}
+                        style={{ width: '100%', padding: '9px 12px' }}
+                      />
+                    </div>
+                  )}
 
-              {mode !== 'reset' && (
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                      {isAr ? 'كلمة المرور' : 'Password'}
+                  <div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 5 }}>
+                      <Mail size={13} />
+                      <span>{isAr ? 'البريد الإلكتروني' : 'Email Address'}</span>
                     </label>
-                    {mode === 'login' && (
-                      <button 
-                        type="button" 
-                        onClick={() => setMode('reset')}
-                        style={{ fontSize: 11, color: 'var(--accent-primary)', padding: 0 }}
-                      >
-                        {isAr ? 'نسيت كلمة المرور؟' : 'Forgot password?'}
-                      </button>
+                    <input
+                      type="email"
+                      required
+                      placeholder="name@example.com"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      style={{ width: '100%', padding: '9px 12px' }}
+                    />
+                  </div>
+
+                  {mode !== 'reset' && (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                          <Lock size={13} />
+                          <span>{isAr ? 'كلمة المرور' : 'Password'}</span>
+                        </label>
+                        {mode === 'login' && (
+                          <button 
+                            type="button" 
+                            onClick={() => { setMode('reset'); setError(null); }}
+                            style={{ fontSize: 11, color: 'var(--accent-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                          >
+                            {isAr ? 'نسيت كلمة المرور؟' : 'Forgot password?'}
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="password"
+                        required
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        style={{ width: '100%', padding: '9px 12px' }}
+                      />
+                    </div>
+                  )}
+
+                  <button 
+                    type="submit" 
+                    className="btn-primary" 
+                    disabled={loading || googleLoading}
+                    style={{ width: '100%', justifyContent: 'center', marginTop: 4, padding: '10px 16px', fontWeight: 600 }}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        <span>{isAr ? 'جارٍ المعالجة...' : 'Processing...'}</span>
+                      </>
+                    ) : mode === 'login' ? (
+                      <span>{isAr ? 'تسجيل الدخول بالبريد' : 'Sign In with Email'}</span>
+                    ) : mode === 'signup' ? (
+                      <span>{isAr ? 'إنشاء حساب جديد' : 'Create Account'}</span>
+                    ) : (
+                      <span>{isAr ? 'إرسال رابط استعادة كلمة المرور' : 'Send Reset Link'}</span>
+                    )}
+                  </button>
+
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12, marginTop: 4 }}>
+                    {mode === 'login' ? (
+                      <>
+                        <span style={{ color: 'var(--text-muted)' }}>
+                          {isAr ? 'ليس لديك حساب؟' : "Don't have an account?"}
+                        </span>
+                        <button 
+                          type="button" 
+                          onClick={() => { setMode('signup'); setError(null); }} 
+                          style={{ color: 'var(--accent-primary)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}
+                        >
+                          {isAr ? 'إنشاء حساب جديد' : 'Sign Up'}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ color: 'var(--text-muted)' }}>
+                          {isAr ? 'لديك حساب بالفعل؟' : 'Already have an account?'}
+                        </span>
+                        <button 
+                          type="button" 
+                          onClick={() => { setMode('login'); setError(null); }} 
+                          style={{ color: 'var(--accent-primary)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}
+                        >
+                          {isAr ? 'تسجيل الدخول' : 'Sign In'}
+                        </button>
+                      </>
                     )}
                   </div>
-                  <input
-                    type="password"
-                    required
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                  />
-                </div>
-              )}
 
-              <button 
-                type="submit" 
-                className="btn-primary" 
-                disabled={loading}
-                style={{ width: '100%', justifyContent: 'center', marginTop: 4, padding: '10px 16px' }}
-              >
-                {loading 
-                  ? (isAr ? 'جارٍ المعالجة...' : 'Processing...') 
-                  : mode === 'login' 
-                    ? (isAr ? 'تسجيل الدخول' : 'Sign In') 
-                    : mode === 'signup' 
-                      ? (isAr ? 'إنشاء حساب جديد' : 'Create Account') 
-                      : (isAr ? 'إرسال رابط إعادة التعيين' : 'Send Reset Link')}
-              </button>
-
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12, marginTop: 4 }}>
-                {mode === 'login' ? (
-                  <>
-                    <span style={{ color: 'var(--text-muted)' }}>
-                      {isAr ? 'ليس لديك حساب؟' : "Don't have an account?"}
-                    </span>
-                    <button type="button" onClick={() => setMode('signup')} style={{ color: 'var(--accent-primary)', fontWeight: 600 }}>
-                      {isAr ? 'إنشاء حساب' : 'Sign Up'}
+                  <div style={{ textAlign: 'center', margin: '4px 0', borderTop: '1px solid var(--border-subtle)', paddingTop: 10 }}>
+                    <button 
+                      type="button" 
+                      onClick={handleGuestMode} 
+                      className="btn-ghost" 
+                      style={{ fontSize: 12, color: 'var(--text-secondary)' }}
+                    >
+                      {isAr ? 'المتابعة كزائر (بدون تسجيل)' : 'Continue as Guest (Offline Mode)'}
                     </button>
-                  </>
-                ) : (
-                  <>
-                    <span style={{ color: 'var(--text-muted)' }}>
-                      {isAr ? 'لديك حساب بالفعل؟' : 'Already have an account?'}
-                    </span>
-                    <button type="button" onClick={() => setMode('login')} style={{ color: 'var(--accent-primary)', fontWeight: 600 }}>
-                      {isAr ? 'تسجيل الدخول' : 'Sign In'}
-                    </button>
-                  </>
-                )}
-              </div>
-
-              <div style={{ textAlign: 'center', margin: '4px 0', borderTop: '1px solid var(--border-subtle)', paddingTop: 12 }}>
-                <button 
-                  type="button" 
-                  onClick={handleGuestMode} 
-                  className="btn-ghost" 
-                  style={{ fontSize: 12, color: 'var(--text-secondary)' }}
-                >
-                  {isAr ? 'المتابعة كزائر (بدون مزامنة سحابية)' : 'Continue as Guest (Local Offline Mode)'}
-                </button>
-              </div>
-            </form>
-          </>
+                  </div>
+                </form>
+              </>
+            )}
+          </div>
         )}
       </div>
-    )}
-  </div>
-</div>
+    </div>,
+    document.body
   );
 };
