@@ -1,4 +1,10 @@
 {
+  "rewrites": [
+    {
+      "source": "/((?!assets|manifest\\.json|favicon\\.svg|icons\\.svg).*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/manifest.json",
