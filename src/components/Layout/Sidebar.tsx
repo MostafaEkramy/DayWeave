@@ -141,7 +141,7 @@ export const Sidebar: React.FC = () => {
 
       {/* Mobile Bottom Navigation */}
       <nav className="mobile-bottom-nav">
-        {navItems.slice(0, 5).map((item) => {
+        {navItems.map((item) => {
           const isActive =
             item.path === '/'
               ? location.pathname === '/'

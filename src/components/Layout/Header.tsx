@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { formatDateShort, shiftDate, isDateToday, getTodayDateString } from '../../utils/dateUtils';
 import {
@@ -10,6 +11,9 @@ import {
   Bell,
   Flame,
   User,
+  Sun,
+  Moon,
+  Languages,
 } from 'lucide-react';
 import { NotificationsPopover } from '../Common/NotificationsPopover';
 import { StreakModal } from '../Common/StreakModal';
@@ -25,7 +29,8 @@ export const Header: React.FC = () => {
   } = useApp();
 
   const { currentUser, isGuest, userProfile } = useAuth();
-  const { t, language, isRTL } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
+  const { t, language, isRTL, toggleLanguage } = useLanguage();
   
   const profilePhoto = userProfile?.photoURL || currentUser?.photoURL || '';
 
@@ -96,6 +101,26 @@ export const Header: React.FC = () => {
             >
               <Flame size={15} />
               <span>{streak.currentStreakDays}d</span>
+            </button>
+
+            {/* Language Toggle */}
+            <button
+              className="btn-icon"
+              onClick={toggleLanguage}
+              title={language === 'ar' ? 'English' : 'العربية'}
+              aria-label={t('sidebar.language')}
+            >
+              <Languages size={16} />
+            </button>
+
+            {/* Theme Toggle (Dark / Light) */}
+            <button
+              className="btn-icon"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? t('sidebar.lightMode') : t('sidebar.darkMode')}
+              aria-label={theme === 'dark' ? t('sidebar.lightMode') : t('sidebar.darkMode')}
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
 
             {/* Notifications */}

@@ -1027,20 +1027,22 @@ input[type="checkbox"] {
   }
 
   .app-header__actions {
-    gap: 4px;
+    gap: 3px;
     flex-shrink: 0;
   }
 
   .app-header__actions .btn-icon {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     padding: 0;
+    flex-shrink: 0;
   }
 
   .app-header__streak-btn {
     padding: 4px 6px;
     gap: 3px;
     font-size: 11px;
+    flex-shrink: 0;
   }
 
   .app-header__streak-btn svg {
@@ -1154,9 +1156,9 @@ input[type="checkbox"] {
     background-color: var(--bg-surface);
     border-top: 1px solid var(--border-subtle);
     z-index: var(--z-sticky);
-    padding: 6px 8px;
-    padding-bottom: max(6px, env(safe-area-inset-bottom));
-    gap: 2px;
+    padding: 5px 4px;
+    padding-bottom: max(5px, env(safe-area-inset-bottom));
+    gap: 1px;
     justify-content: space-around;
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
   }
@@ -1170,15 +1172,15 @@ input[type="checkbox"] {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    padding: 6px 4px;
+    gap: 2px;
+    padding: 5px 2px;
     border-radius: var(--radius-md);
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 500;
     flex: 1;
-    max-width: 72px;
+    max-width: 62px;
     transition: all 0.15s ease;
   }
 
