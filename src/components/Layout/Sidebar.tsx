@@ -18,6 +18,7 @@ import {
   Moon,
   Layers,
   Languages,
+  Timer,
 } from 'lucide-react';
 
 interface NavItem {
@@ -38,7 +39,7 @@ const navItems: NavItem[] = [
 
 export const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const { setIsPlannerOpen, setEditingActivity, setIsActivityModalOpen } = useApp();
+  const { setIsPlannerOpen, setEditingActivity, setIsActivityModalOpen, setIsFocusModalOpen, setFocusActivity } = useApp();
   const { theme, toggleTheme } = useTheme();
   const { t, toggleLanguage, language } = useLanguage();
   const location = useLocation();
@@ -91,6 +92,17 @@ export const Sidebar: React.FC = () => {
           >
             <Sparkles size={18} />
             {!collapsed && <span>{t('sidebar.planMyDay')}</span>}
+          </button>
+          <button
+            className="sidebar__action-btn sidebar__action-btn--focus"
+            onClick={() => {
+              setFocusActivity(null);
+              setIsFocusModalOpen(true);
+            }}
+            title={t('sidebar.focusSession') + ' (F)'}
+          >
+            <Timer size={18} />
+            {!collapsed && <span>{t('sidebar.focusSession')}</span>}
           </button>
         </div>
 

@@ -61,10 +61,8 @@ const AppContent: React.FC = () => {
       } else if (e.key === 'f' || e.key === 'F') {
         e.preventDefault();
         const nextIncomplete = todayActivities.find(a => !a.isCompleted);
-        if (nextIncomplete) {
-          setFocusActivity(nextIncomplete);
-          setIsFocusModalOpen(true);
-        }
+        setFocusActivity(nextIncomplete || null);
+        setIsFocusModalOpen(true);
       } else if (e.key === '1') {
         navigate('/');
       } else if (e.key === '2') {

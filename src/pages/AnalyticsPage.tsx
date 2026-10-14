@@ -15,6 +15,7 @@ import {
   Calendar,
   Award,
 } from 'lucide-react';
+import { GrowthTrendChart } from '../components/Analytics/GrowthTrendChart';
 
 const AnalyticsPage: React.FC = () => {
   const { activities, streak, reviews } = useApp();
@@ -104,6 +105,9 @@ const AnalyticsPage: React.FC = () => {
           </p>
         </div>
       </div>
+
+      {/* Interactive Growth & Trajectory Chart */}
+      <GrowthTrendChart />
 
       {/* Summary Cards Row */}
       <div

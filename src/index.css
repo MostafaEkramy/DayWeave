@@ -465,6 +465,51 @@ input[type="checkbox"] {
   color: #FFFFFF;
 }
 
+.sidebar__action-btn--focus {
+  background-color: rgba(99, 102, 241, 0.1);
+  color: #6366F1;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.sidebar__action-btn--focus:hover {
+  background-color: #6366F1;
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+}
+
+/* Quick Focus Button in Header */
+.btn-focus-quick {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(99, 102, 241, 0.1);
+  color: #6366F1;
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-focus-quick:hover {
+  background-color: #6366F1;
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
+
+@media (max-width: 640px) {
+  .btn-focus-quick__label {
+    display: none;
+  }
+  .btn-focus-quick {
+    padding: 0 9px;
+  }
+}
+
 /* Navigation */
 .sidebar__nav {
   display: flex;

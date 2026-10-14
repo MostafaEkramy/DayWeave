@@ -14,6 +14,7 @@ import {
   Sun,
   Moon,
   Languages,
+  Timer,
 } from 'lucide-react';
 import { NotificationsPopover } from '../Common/NotificationsPopover';
 import { StreakModal } from '../Common/StreakModal';
@@ -24,6 +25,8 @@ export const Header: React.FC = () => {
     setSelectedDate,
     setIsSearchPaletteOpen,
     setIsAuthModalOpen,
+    setIsFocusModalOpen,
+    setFocusActivity,
     streak,
     conflicts,
   } = useApp();
@@ -91,6 +94,20 @@ export const Header: React.FC = () => {
               aria-label={t('header.search')}
             >
               <Search size={16} />
+            </button>
+
+            {/* Quick Focus / Study Timer Button */}
+            <button
+              className="btn-focus-quick"
+              onClick={() => {
+                setFocusActivity(null);
+                setIsFocusModalOpen(true);
+              }}
+              title={t('header.focusTimer') + ' (F)'}
+              aria-label={t('header.focusTimer')}
+            >
+              <Timer size={15} />
+              <span className="btn-focus-quick__label">{t('header.focusTimer')}</span>
             </button>
 
             {/* Streak */}

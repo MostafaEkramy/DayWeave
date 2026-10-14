@@ -4,7 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { formatDateTitle } from '../../utils/dateUtils';
 import { formatMinutesDuration } from '../../utils/timeUtils';
 import { EnergyLevel } from '../../types/activity';
-import { Clock, Plus } from 'lucide-react';
+import { Clock, Plus, Timer } from 'lucide-react';
 
 export const TodayOverview: React.FC = () => {
   const { 
@@ -13,7 +13,9 @@ export const TodayOverview: React.FC = () => {
     userEnergy, 
     setUserEnergy, 
     setIsActivityModalOpen, 
-    setEditingActivity 
+    setEditingActivity,
+    setIsFocusModalOpen,
+    setFocusActivity,
   } = useApp();
   const { t, language } = useLanguage();
 
@@ -124,6 +126,25 @@ export const TodayOverview: React.FC = () => {
             })}
           </div>
         </div>
+
+        {/* Focus Timer Quick Action */}
+        <button
+          onClick={() => {
+            setFocusActivity(null);
+            setIsFocusModalOpen(true);
+          }}
+          className="btn-secondary today-overview__focus-btn"
+          style={{
+            borderColor: 'rgba(99, 102, 241, 0.3)',
+            backgroundColor: 'rgba(99, 102, 241, 0.08)',
+            color: '#6366F1',
+            gap: 6,
+          }}
+          title={t('header.focusTimer') + ' (F)'}
+        >
+          <Timer size={15} />
+          <span>{t('sidebar.focusSession')}</span>
+        </button>
 
         {/* Add Activity Button */}
         <button
